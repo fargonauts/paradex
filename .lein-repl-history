@@ -1,0 +1,40 @@
+atom
+(help atom)
+help
+doc
+docs
+(doc atom)
+(doc set)
+setq
+setf
+update
+(doc update)
+(doc ~)
+(doc @)
+(doc assoc)
+q
+quit
+(doc cons)
+quit
+(defn _ (n) (+ n 2))
+(defn _ [n] (+ n 2))
+(_ 2)
+quit
+(doc apply)
+quit
+(doc cons)
+(doc cat)
+(doc clojure.core)
+clojure.core.a
+ls
+quit
+(cons [1 2] [[3 4] [5 6]])
+quit
+(defn x [] (println "ran x"))
+(defn s [] (println "ran x"))
+(apply x [])
+(apply y [])
+(apply s [])
+quit
+(keyword :x)
+quit
