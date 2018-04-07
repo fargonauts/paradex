@@ -3,7 +3,7 @@
 ;                     for workspace objects (either letters or groups).
 ;---------------------------------------------
 
-(in-package 'user)
+
 
 ;---------------------------------------------
 

@@ -41,20 +41,19 @@
    :fixed  fixed
    })
 
-(defn- add-nested [slipnet k1 k2 v]
-  (swap! slipnet
-         (fn [slipnet]
-           (assoc slipnet k1 
-                  (assoc (k1 slipnet) k2 v)))))
+(defn- add-nested [central k1 k2 v]
+  (swap! central
+         (fn [central]
+           (assoc-in central [:slipnet k1 k2] v))))
 
-(defn- add-node [slipnet k v]
-  (add-nested slipnet :nodes k v))
+(defn- add-node [central k v]
+  (add-nested central :nodes k v))
 
-(defn- add-link [slipnet k v]
-  (add-nested slipnet :links k v))
+(defn- add-link [central k v]
+  (add-nested central :links k v))
 
-(defn create-node [slipnet id activation depth associated]
-  (add-node slipnet id (build-node activation depth id associated)))
+(defn create-node [central id activation depth associated]
+  (add-node central id (build-node activation depth id associated)))
 
-(defn create-link [slipnet from to t label length fixed]
-  (add-link slipnet from (build-link to t label length fixed)))
+(defn create-link [central from to t label length fixed]
+  (add-link central from (build-link to t label length fixed)))

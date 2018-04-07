@@ -3,7 +3,7 @@
 ;       translated rule.
 ;---------------------------------------------
 
-(in-package 'user)
+
 
 (defflavor rule
   (object-category1 descriptor1-facet descriptor1 

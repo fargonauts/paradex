@@ -2,7 +2,7 @@
 ; RUN: This file contains functions for running the program.
 ;---------------------------------------------
 
-;(in-package 'user)
+;
   
 (defun run-ccat ()
 ; Runs the main loop of the program:  choose a codelet, run it.  Every

@@ -2,28 +2,28 @@
 
 ; {:codelets [[urgency codelet]]} sorted by urgency?
 
-(defn pick-codelet [coderack]
-  (let [codelets   (:codelets @coderack)
+(defn pick-codelet [central]
+  (let [codelets   (:codelets (:coderack @central))
         [_ picked] (first codelets)
         remaining  (rest codelets)]
-    (swap! coderack
-           (fn [coderack]
-             (assoc coderack :codelets remaining)))
+    (swap! central
+           (fn [central]
+             (assoc-in central [:coderack :codelets] remaining)))
     picked))
 
-(defn add-codelet [coderack codelet urgency]
-  (let [codelets  (:codelets @coderack)]
-    (swap! coderack
-           (fn [coderack]
-             (assoc coderack :codelets (cons [urgency codelet] codelets))))
+(defn add-codelet [central codelet urgency]
+  (let [codelets  (:codelets (:coderack central))]
+    (swap! central
+           (fn [central]
+             (assoc-in central [:coderack :codelets] (cons [urgency codelet] codelets))))
     "ran"))
 
-(defmacro def-codelet [library id body-list]
+(defmacro def-codelet [library id args body-list]
   `(swap! ~library
      (fn [state#]
        (assoc state# (keyword ~id)
-         (fn [] ~body-list)))))
+         (fn ~args ~body-list)))))
 
-(defn run-codelet [library id]
-  (apply ((keyword id) @library) []))
+(defn run-codelet [library id central]
+  (apply ((keyword id) @library) [central]))
 

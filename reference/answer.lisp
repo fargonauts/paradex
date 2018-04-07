@@ -7,7 +7,7 @@
 ; length changes.
 ;---------------------------------------------
 
-(in-package 'user)
+()
 
 (defun answer-builder (&aux description-type answer-string-letter-list 
 			    objects-to-change)

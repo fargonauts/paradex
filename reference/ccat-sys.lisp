@@ -5,7 +5,7 @@
 ;            global variables (names surrounded by '*'s).
 ;---------------------------------------------
 
-(in-package 'user)
+
 
 (defsys 'ccat-sys
         '("util"

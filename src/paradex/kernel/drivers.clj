@@ -4,35 +4,31 @@
     [paradex.kernel.coderack  :refer :all]
     [paradex.kernel.slipnet   :refer :all]))
 
-(declare x)
-(declare y)
+(defn create-central []
+  (atom {:slipnet   {:nodes {} :links {}}
+         :workspace {}
+         :coderack  {:codelets '()}}))
 
-(def coderack (atom {:codelets '([1 "x"])}))
 (def codelet-library (atom {}))
 
-(def-codelet codelet-library "x" (do (println "ran x") (add-codelet coderack :y 1)))
-(def-codelet codelet-library "y" (do (println "ran y") (add-codelet coderack :z 1)))
-(def-codelet codelet-library "z" (do (println "ran z") (add-codelet coderack :x 1)))
+(defmacro def-clet [id args body]
+  `(def-codelet codelet-library ~id ~args ~body))
+(def-clet "x" [central] (do (println "ran x") (add-codelet central :y 1)))
+(def-clet "y" [central] (do (println "ran y") (add-codelet central :z 1)))
+(def-clet "z" [central] (do (println "ran z") (add-codelet central :x 1)))
 
-;(defn create-node [slipnet id activation depth associated]
-;  (add-node slipnet id (build-node activation depth id associated)))
-;
-;(defn create-link [slipnet from to t label length fixed]
-;  (add-link slipnet from (build-link to t label length fixed)))
-
-(def slipnet (atom {:nodes {} :links {}}))
+;(def central (atom {:slipnet slipnet :workspace workspace :coderack coderack}))
+(def central (create-central))
 
 (defn main-loop []
-  (create-node slipnet "a" 100 10 [])
-  (create-node slipnet "b" 100 10 [])
-  (create-link slipnet "a" "b" nil nil 100 true)
-  (if false
-    nil
+  (add-codelet central :x 1)
+  (create-node central "a" 100 10 [])
+  (create-node central "b" 100 10 [])
+  (create-link central "a" "b" nil nil 100 true)
+  (loop []
     (do
-      (let [picked (pick-codelet coderack)]
-        (do 
-          (println picked)
-          (run-codelet codelet-library picked)
-          (println @coderack)
-          (println @slipnet)
-          (recur))))))
+      (let [picked (pick-codelet central)]
+        (println picked)
+        (run-codelet codelet-library picked central)
+        (println central) 
+        (recur)))))

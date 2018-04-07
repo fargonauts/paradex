@@ -2,7 +2,7 @@
 ; INITIALIZATION: This file contains functions for initializing the program.
 ;---------------------------------------------
 
-(in-package 'user)
+
 
 (defun init-ccat (initial-string-input modified-string-input 
 		  target-string-input &key random-state no-graphics
