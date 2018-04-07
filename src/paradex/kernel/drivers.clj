@@ -16,7 +16,7 @@
 
 (def-clet "x" [central] (do (println "ran x") (add-codelet central :y 1)))
 (def-clet "y" [central] (do (println "ran y") (add-codelet central :z 1))) 
-(def-clet "z" [central] (do (println "ran z") (add-codelet central :x 1)))
+(def-clet "z" [central] (do (println "ran z") (add-codelet central :y 1) (add-codelet central :y 2)))
 
 (def central (create-central))
 
@@ -41,8 +41,8 @@
   (add-object  central [:left] '(2 4 6)))
 
 (defn main-loop []
-  ;(initialize central)
-  (initialize-nbongard central)
+  (initialize central)
+  ;(initialize-nbongard central)
   (loop []
     (do
       (let [picked (pick-codelet central)]

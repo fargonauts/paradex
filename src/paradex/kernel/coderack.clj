@@ -4,6 +4,7 @@
 
 (defn pick-codelet [central]
   (let [codelets   (:codelets (:coderack @central))
+        codelets   (sort-by first codelets)
         [_ picked] (first codelets)
         remaining  (rest codelets)]
     (swap! central
@@ -12,10 +13,10 @@
     picked))
 
 (defn add-codelet [central codelet urgency]
-  (let [codelets  (:codelets (:coderack central))]
+  (let [codelets  (:codelets (:coderack @central))]
     (swap! central
            (fn [central]
-             (assoc-in central [:coderack :codelets] (cons [urgency codelet] codelets))))
+             (assoc-in central [:coderack :codelets] (concat [[urgency codelet]] codelets))))
     "ran"))
 
 (defmacro def-codelet [library id args body-list]
