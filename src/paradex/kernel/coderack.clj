@@ -1,12 +1,11 @@
-(ns paradex.kernel.coderack)
-
-; {:codelets [[urgency codelet]]} sorted by urgency?
+(ns paradex.kernel.coderack
+  (:require [paradex.kernel.formulas :refer [wrand drop-nth]]))
 
 (defn pick-codelet [central]
   (let [codelets   (:codelets (:coderack @central))
-        codelets   (sort-by first codelets)
-        [_ picked] (first codelets)
-        remaining  (rest codelets)]
+        index      (wrand (map first codelets))
+        [_ picked] (nth codelets index)
+        remaining  (drop-nth index codelets)]
     (swap! central
            (fn [central]
              (assoc-in central [:coderack :codelets] remaining)))
@@ -26,5 +25,6 @@
          (fn ~args ~body-list)))))
 
 (defn run-codelet [library id central]
-  (apply ((keyword id) @library) [central]))
+  (let [codelet ((keyword id) @library)]
+    (apply codelet [central])))
 

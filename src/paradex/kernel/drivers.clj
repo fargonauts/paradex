@@ -22,6 +22,7 @@
 
 (defn initialize [central]
   (add-codelet central :x 1)
+  (add-codelet central :x 1)
   (create-node central "a" 100 10 [])
   (create-node central "b" 100 10 [])
   (create-link central "a" "b" nil nil 100 true))
@@ -43,6 +44,7 @@
 (defn main-loop []
   (initialize central)
   ;(initialize-nbongard central)
+  (println central) 
   (loop []
     (do
       (let [picked (pick-codelet central)]
