@@ -1,5 +1,6 @@
 (ns paradex.kernel.slipnet
-  (:require [paradex.kernel.formulas :refer [slipnet-decay-formula]]))
+  (:require [paradex.kernel.formulas  :refer :all]
+            [paradex.kernel.coderack  :refer :all]))
 
 ; Node
 ;  - activation
@@ -67,4 +68,9 @@
 (defn slipnet-update [central]
   (let [nodes (:nodes (:slipnet @central))]
     (doseq [[k node] nodes]
-      (add-node central k (slipnet-decay node)))))
+      (let [activation (:activation node)]
+        (when (slipnet-activation-post-threshold activation)
+          (doseq [id (:associated node)]
+            (print "posting codelet")
+            (add-codelet central id (slipnet-urgency-post-formula activation))))
+        (add-node central k (slipnet-decay node))))))

@@ -15,9 +15,9 @@
 (defmacro def-clet [id args body]
   `(def-codelet codelet-library ~id ~args ~body))
 
-(def-clet "x" [central] (do (println "ran x") (add-codelet central :y 1)))
-(def-clet "y" [central] (do (println "ran y") (add-codelet central :z 1))) 
-(def-clet "z" [central] (do (println "ran z") (add-codelet central :y 1) (add-codelet central :y 2)))
+(def-clet "x" [central] (do (println "ran x") ));(add-codelet central :y 1)))
+(def-clet "y" [central] (do (println "ran y") ));(add-codelet central :z 1))) 
+(def-clet "z" [central] (do (println "ran z") ));(add-codelet central :y 1) (add-codelet central :y 2)))
 
 (def-clet "status" [central] (do (println "status!") (println central)))
 (def-clet "slipnet-update" [central] (slipnet-update central))
@@ -29,8 +29,8 @@
   (add-codelet central :x 1)
   (add-updater central :status)
   (add-updater central :slipnet-update)
-  (create-node central "a" 100 10 [])
-  (create-node central "b" 100 10 [])
+  (create-node central "a" 100 90 [:x])
+  (create-node central "b" 100 90 [:x])
   (create-link central "a" "b" nil nil 100 true))
 
 (def-clet "even-odd-split" [central]
@@ -53,10 +53,11 @@
   ;(initialize-nbongard central)
   (println central) 
   (loop []
-    (do
-      (let [picked (pick-codelet central)]
-        (println picked)
-        (run-codelet codelet-library picked central)
-        (run-updates codelet-library central)
-        (println central)
-        (recur)))))
+    (let [picked (pick-codelet central)]
+      ;(println picked)
+      (run-codelet codelet-library picked central)
+      (run-updates codelet-library central))
+      ;(println central))
+    (if (empty? (:codelets (:coderack @central)))
+      (println "Empty coderack, finishing..")
+      (recur))))

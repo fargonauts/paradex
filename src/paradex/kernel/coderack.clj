@@ -3,7 +3,7 @@
 
 (defn pick-codelet [central]
   (let [codelets   (:codelets (:coderack @central))
-        [picked remaining] (weighted-pick codelets)]
+       [picked remaining] (weighted-pick codelets)]
     (swap! central
            (fn [central]
              (assoc-in central [:coderack :codelets] remaining)))
