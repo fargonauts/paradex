@@ -1,11 +1,9 @@
 (ns paradex.kernel.coderack
-  (:require [paradex.kernel.formulas :refer [wrand drop-nth]]))
+  (:require [paradex.kernel.formulas :refer [weighted-pick]]))
 
 (defn pick-codelet [central]
   (let [codelets   (:codelets (:coderack @central))
-        index      (wrand (map first codelets))
-        [_ picked] (nth codelets index)
-        remaining  (drop-nth index codelets)]
+        [picked remaining] (weighted-pick codelets)]
     (swap! central
            (fn [central]
              (assoc-in central [:coderack :codelets] remaining)))

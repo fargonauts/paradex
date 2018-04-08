@@ -1,4 +1,5 @@
-(ns paradex.kernel.slipnet)
+(ns paradex.kernel.slipnet
+  (:require [paradex.kernel.formulas :refer [slipnet-decay-formula]]))
 
 ; Node
 ;  - activation
@@ -46,10 +47,10 @@
          (fn [central]
            (assoc-in central [:slipnet k1 k2] v))))
 
-(defn- add-node [central k v]
+(defn add-node [central k v]
   (add-nested central :nodes k v))
 
-(defn- add-link [central k v]
+(defn add-link [central k v]
   (add-nested central :links k v))
 
 (defn create-node [central id activation depth associated]
@@ -57,3 +58,13 @@
 
 (defn create-link [central from to t label length fixed]
   (add-link central from (build-link to t label length fixed)))
+
+(defn slipnet-decay [node]
+  (let [depth      (:depth node)
+        activation (:activation node)]
+    (assoc node :activation (slipnet-decay-formula activation depth))))
+
+(defn slipnet-update [central]
+  (let [nodes (:nodes (:slipnet @central))]
+    (doseq [[k node] nodes]
+      (add-node central k (slipnet-decay node)))))

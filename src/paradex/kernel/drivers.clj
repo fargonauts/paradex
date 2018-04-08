@@ -20,6 +20,7 @@
 (def-clet "z" [central] (do (println "ran z") (add-codelet central :y 1) (add-codelet central :y 2)))
 
 (def-clet "status" [central] (do (println "status!") (println central)))
+(def-clet "slipnet-update" [central] (slipnet-update central))
 
 (def central (create-central))
 
@@ -27,6 +28,7 @@
   (add-codelet central :x 1)
   (add-codelet central :x 1)
   (add-updater central :status)
+  (add-updater central :slipnet-update)
   (create-node central "a" 100 10 [])
   (create-node central "b" 100 10 [])
   (create-link central "a" "b" nil nil 100 true))
