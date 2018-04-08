@@ -15,8 +15,13 @@
   (let [codelets  (:codelets (:coderack @central))]
     (swap! central
            (fn [central]
-             (assoc-in central [:coderack :codelets] (concat [[urgency codelet]] codelets))))
-    "ran"))
+             (assoc-in central [:coderack :codelets] (concat [[urgency codelet]] codelets))))))
+
+(defn add-updater [central updater]
+  (let [updaters  (:updaters (:coderack @central))]
+    (swap! central
+           (fn [central]
+             (assoc-in central [:coderack :updaters] (concat [updater] updaters))))))
 
 (defmacro def-codelet [library id args body-list]
   `(swap! ~library
@@ -28,3 +33,6 @@
   (let [codelet ((keyword id) @library)]
     (apply codelet [central])))
 
+(defn run-updates [library central]
+  (let [updaters (:updaters (:coderack @central))]
+    (doall (map #(run-codelet library % central) updaters))))

@@ -7,7 +7,8 @@
 (defn create-central []
   (atom {:slipnet   {:nodes {} :links {}}
          :workspace {}
-         :coderack  {:codelets '()}}))
+         :coderack  {:codelets '()
+                     :updaters '()}}))
 
 (def codelet-library (atom {}))
 
@@ -18,11 +19,14 @@
 (def-clet "y" [central] (do (println "ran y") (add-codelet central :z 1))) 
 (def-clet "z" [central] (do (println "ran z") (add-codelet central :y 1) (add-codelet central :y 2)))
 
+(def-clet "status" [central] (do (println "status!") (println central)))
+
 (def central (create-central))
 
 (defn initialize [central]
   (add-codelet central :x 1)
   (add-codelet central :x 1)
+  (add-updater central :status)
   (create-node central "a" 100 10 [])
   (create-node central "b" 100 10 [])
   (create-link central "a" "b" nil nil 100 true))
@@ -35,6 +39,7 @@
              (every? even? right))
       (println "Even-odd split detected")
       (println "Unknown sequence"))))
+
 
 (defn initialize-nbongard [central]
   (add-codelet central :even-odd-split 1)
@@ -50,5 +55,6 @@
       (let [picked (pick-codelet central)]
         (println picked)
         (run-codelet codelet-library picked central)
-        (println central) 
+        (run-updates codelet-library central)
+        (println central)
         (recur)))))
