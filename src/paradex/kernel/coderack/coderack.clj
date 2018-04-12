@@ -1,5 +1,5 @@
-(ns paradex.kernel.coderack
-  (:require [paradex.kernel.formulas :refer [weighted-pick]]))
+(ns paradex.kernel.coderack.coderack
+  (:require [paradex.kernel.coderack.formulas :refer [weighted-pick]]))
 
 (defn pick-codelet [central]
   (let [codelets   (:codelets (:coderack @central))

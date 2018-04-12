@@ -1,11 +1,4 @@
-(ns paradex.kernel.formulas
-  (:require [paradex.kernel.base :refer [wrand drop-nth]]))
-
-(defn weighted-pick [coll]
-  (let [index      (wrand (map first coll)) 
-        [_ picked] (nth coll index)
-        remaining  (drop-nth index coll)]
-    [picked remaining]))
+(ns paradex.kernel.slipnet.formulas)
 
 (defn slipnet-decay-formula [activation depth]
   (max 0 (- activation (int (* activation (/ (- 100 depth) 100))))))

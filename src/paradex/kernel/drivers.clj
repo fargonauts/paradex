@@ -1,8 +1,8 @@
 (ns paradex.kernel.drivers
   (:require 
-    [paradex.kernel.workspace :refer :all]
-    [paradex.kernel.coderack  :refer :all]
-    [paradex.kernel.slipnet   :refer :all]))
+    [paradex.kernel.workspace.workspace :refer :all]
+    [paradex.kernel.coderack.coderack  :refer :all]
+    [paradex.kernel.slipnet.slipnet   :refer :all]))
 
 (defn create-central []
   (atom {:slipnet   {:nodes {} :links {}}

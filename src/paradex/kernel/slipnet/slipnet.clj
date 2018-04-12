@@ -1,6 +1,6 @@
-(ns paradex.kernel.slipnet
-  (:require [paradex.kernel.formulas  :refer :all]
-            [paradex.kernel.coderack  :refer :all]))
+(ns paradex.kernel.slipnet.slipnet
+  (:require [paradex.kernel.slipnet.formulas   :refer :all]
+            [paradex.kernel.coderack.coderack  :refer :all]))
 
 ; Node
 ;  - activation
