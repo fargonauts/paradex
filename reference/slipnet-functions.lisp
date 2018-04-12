@@ -2,7 +2,7 @@
 ; SLIPNET-FUNCTIONS: This file contains functions for the Slipnet.
 ;---------------------------------------------
 
-(in-package 'user)
+
 
 (defmethod (slipnode :activate-from-workspace) ()
   (incf activation-buffer %workspace-activation%))

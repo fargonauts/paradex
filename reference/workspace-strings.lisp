@@ -3,7 +3,7 @@
 ;                      workspace strings.
 ;---------------------------------------------
 
-(in-package 'user)
+
 
 ;---------------------------------------------
 ; The strings are the initial string, the modified string,

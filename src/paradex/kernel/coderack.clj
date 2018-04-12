@@ -1,29 +1,36 @@
-(ns paradex.kernel.coderack)
+(ns paradex.kernel.coderack
+  (:require [paradex.kernel.formulas :refer [weighted-pick]]))
 
-; {:codelets [[urgency codelet]]} sorted by urgency?
-
-(defn pick-codelet [coderack]
-  (let [codelets   (:codelets @coderack)
-        [_ picked] (first codelets)
-        remaining  (rest codelets)]
-    (swap! coderack
-           (fn [coderack]
-             (assoc coderack :codelets remaining)))
+(defn pick-codelet [central]
+  (let [codelets   (:codelets (:coderack @central))
+       [picked remaining] (weighted-pick codelets)]
+    (swap! central
+           (fn [central]
+             (assoc-in central [:coderack :codelets] remaining)))
     picked))
 
-(defn add-codelet [coderack codelet urgency]
-  (let [codelets  (:codelets @coderack)]
-    (swap! coderack
-           (fn [coderack]
-             (assoc coderack :codelets (cons [urgency codelet] codelets))))
-    "ran"))
+(defn add-codelet [central codelet urgency]
+  (let [codelets  (:codelets (:coderack @central))]
+    (swap! central
+           (fn [central]
+             (assoc-in central [:coderack :codelets] (concat [[urgency codelet]] codelets))))))
 
-(defmacro def-codelet [library id body-list]
+(defn add-updater [central updater]
+  (let [updaters  (:updaters (:coderack @central))]
+    (swap! central
+           (fn [central]
+             (assoc-in central [:coderack :updaters] (concat [updater] updaters))))))
+
+(defmacro def-codelet [library id args body-list]
   `(swap! ~library
      (fn [state#]
        (assoc state# (keyword ~id)
-         (fn [] ~body-list)))))
+         (fn ~args ~body-list)))))
 
-(defn run-codelet [library id]
-  (apply ((keyword id) @library) []))
+(defn run-codelet [library id central]
+  (let [codelet ((keyword id) @library)]
+    (apply codelet [central])))
 
+(defn run-updates [library central]
+  (let [updaters (:updaters (:coderack @central))]
+    (doall (map #(run-codelet library % central) updaters))))

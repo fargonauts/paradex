@@ -3,7 +3,7 @@
 ;             from runs of the Copycat program.
 ;---------------------------------------------
 
-(in-package 'user)
+
 
 (proclaim '(special *run-number* *data-file* *verbose-data-file* 
 	            *random-state-file*))

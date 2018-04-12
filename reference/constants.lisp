@@ -2,7 +2,7 @@
 ; CONSTANTS: This file contains constants for Copycat.
 ;---------------------------------------------
 
-(in-package 'user)
+
 
 ;---------------------------------------------
 
