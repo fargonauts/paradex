@@ -60,17 +60,32 @@
 (defn create-link [central from to t label length fixed]
   (add-link central from (build-link to t label length fixed)))
 
-(defn slipnet-decay [node]
+(defn decay [node]
   (let [depth      (:depth node)
         activation (:activation node)]
-    (assoc node :activation (slipnet-decay-formula activation depth))))
+    (assoc node :activation (decay-formula activation depth))))
+
+(defn post-codelets [central node]
+  (let [activation (:activation node)]
+          (when (slipnet-activation-post-threshold activation)
+            (doseq [id (:associated node)]
+              (add-codelet central id (slipnet-urgency-post-formula activation))))))
+
+(defn update-node [central node]
+  (post-codelets central node)
+  (decay node))
+
+(defn update-link [central link]
+  ; TODO: Shrink in proportion to label node
+  link)
 
 (defn slipnet-update [central]
-  (let [nodes (:nodes (:slipnet @central))]
+  (let [slipnet (:slipnet @central)
+        nodes   (:nodes slipnet)
+        links   (:links slipnet)]
     (doseq [[k node] nodes]
-      (let [activation (:activation node)]
-        (when (slipnet-activation-post-threshold activation)
-          (doseq [id (:associated node)]
-            (print "posting codelet")
-            (add-codelet central id (slipnet-urgency-post-formula activation))))
-        (add-node central k (slipnet-decay node))))))
+      (add-node central k (update-node central node)))
+    (doseq [[k link] links]
+      (add-link central k (update-link central link)))))
+
+; TODO: organize once file is bigger
