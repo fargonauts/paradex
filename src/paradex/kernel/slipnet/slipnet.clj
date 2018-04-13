@@ -67,9 +67,9 @@
 
 (defn post-codelets [central node]
   (let [activation (:activation node)]
-          (when (slipnet-activation-post-threshold activation)
+          (when (activation-post-threshold activation)
             (doseq [id (:associated node)]
-              (add-codelet central id (slipnet-urgency-post-formula activation))))))
+              (add-codelet central id (urgency-post-formula activation))))))
 
 (defn update-node [central node]
   (post-codelets central node)
