@@ -1,6 +1,6 @@
 (ns paradex.kernel.library)
 
-; A very simple datatype...
+; A very simple datatype for holding codelet templates
 
 (defrecord Library [codelet-templates])
 (defn init-library [] (Library. {}))
