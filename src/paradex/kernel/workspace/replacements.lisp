@@ -3,7 +3,7 @@
 ;               replacements.
 ;---------------------------------------------
 
-
+(in-package 'user)
 			     
 (defflavor replacement
     (obj1 obj2)

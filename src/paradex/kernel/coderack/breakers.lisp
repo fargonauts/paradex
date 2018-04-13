@@ -2,7 +2,7 @@
 ; BREAKERS:  This file contains the breaker codelet.
 ;---------------------------------------------
 
-
+(in-package 'user)
 
 (defun breaker (&aux fizzle-probability structure structure-list
 		     break-probability quit)

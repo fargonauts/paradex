@@ -2,7 +2,7 @@
 ; Note that this file works in Sun Common Lisp only for Lisp files, not
 ; for C files.  Someone should modify it to work for C files as well.
 
-
+(in-package 'user)
 
 (defflavor file-system
     (list-of-files)

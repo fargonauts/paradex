@@ -2,7 +2,7 @@
 ; UTIL: This file contains utilities for Copycat.
 ;--------------------------------------------- 
 
-
+(in-package 'user)
 
 ;---------------------------------------------
 

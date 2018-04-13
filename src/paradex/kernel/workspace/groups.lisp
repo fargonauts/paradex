@@ -2,7 +2,7 @@
 ; GROUPS: This file contains flavors, methods, and codelets for groups.
 ;---------------------------------------------
 
-
+(in-package 'user)
 
 (defflavor group
     (group-category ; E.g., "succgrp" or "predgrp".

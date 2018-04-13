@@ -3,7 +3,7 @@
 ;                  correspondences.
 ;---------------------------------------------
 
-
+(in-package 'user)
 
 (defflavor correspondence
     (obj1 obj2  

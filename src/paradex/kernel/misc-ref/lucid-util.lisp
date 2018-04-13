@@ -1,6 +1,6 @@
 ;; Utilities for Lucid Common Lisp.  Written by Melanie Mitchell, May, 1989.
 
-
+(in-package 'user)
 
 (proclaim '(inline sqr))  ; Instruction to the compiler to compile the sqr 
                           ; function inline.
