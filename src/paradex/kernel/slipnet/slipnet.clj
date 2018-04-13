@@ -65,14 +65,15 @@
         activation (:activation node)]
     (assoc node :activation (decay-formula activation depth))))
 
-(defn post-codelets [central node]
-  (let [activation (:activation node)]
-          (when (activation-post-threshold activation)
-            (doseq [id (:associated node)]
-              (add-codelet central id (urgency-post-formula activation))))))
+;(defn post-codelets [central node]
+;  )
+  ;(let [activation (:activation node)]
+  ;        (when (activation-post-threshold activation)
+  ;          (doseq [id (:associated node)]
+  ;            (add-codelet central id (urgency-post-formula activation))))))
 
 (defn update-node [central node]
-  (post-codelets central node)
+  ;(post-codelets central node)
   (decay node))
 
 (defn update-link [central link]
@@ -87,8 +88,6 @@
       (add-node central k (update-node central node)))
     (doseq [[k link] links]
       (add-link central k (update-link central link)))))
-
-; TODO: organize once file is bigger
 
 ;(defflavor slipnode 
 ;    (activation 
@@ -133,19 +132,6 @@
 ;
 ;;---------------------------------------------
 ;
-;(defmethod (slipnode :print) ()
-;  (format t "I am the node ~a~&" pname)
-;  (format t "My activation is ~a~&" activation)
-;  (format t "My conceptual-depth is ~a~&" conceptual-depth)
-;  (format t "My incoming links are: ")
-;  (send-method-to-list incoming-links :print)
-;  (format t "~%")
-;  (format t "My outgoing links are: ")
-;  (send-method-to-list (send self :outgoing-links) :print)
-;  (format t "~%"))
-;
-;;---------------------------------------------
-;
 ;(defmethod (slipnode :outgoing-links) ()
 ;; Returns a list of the links emanating from this node.
 ;  (append category-links instance-links has-property-links lateral-slip-links 
@@ -182,12 +168,6 @@
 ;  :gettable-instance-variables
 ;  :settable-instance-variables
 ;  :initable-instance-variables)
-;
-;;---------------------------------------------
-;
-;(defmethod (slipnet-link :print) ()
-;  (format t "From ~a to ~a~&" (send from-node :pname) 
-;	                      (send to-node :pname)))
 ;
 ;;---------------------------------------------
 ;

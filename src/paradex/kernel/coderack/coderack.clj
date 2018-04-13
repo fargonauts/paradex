@@ -1,8 +1,12 @@
 (ns paradex.kernel.coderack.coderack
-  (:require [paradex.kernel.coderack.formulas :refer [weighted-pick]]))
+  (:require [paradex.kernel.coderack.formulas :refer [weighted-pick]]
+            [paradex.kernel.coderack.codelet  :refer :all]))
 
 ; This simplified version of the coderack uses no bins.
 ; Other small simplifications have been made
+
+(defrecord Coderack [codelets updaters size])
+(defn init-coderack [n] (Coderack. [] [] n))
 
 (defn pick-codelet-by-formula 
   "Probabilistically pick a codelet using the urgency formula and remove it from the coderack to be run"
@@ -17,12 +21,12 @@
 (defn pick-codelet
   "Probabilistically pick a high-urgency codelet"
   [central]
-  (pick-codelet-by-formula central identity))
+  (pick-codelet-by-formula central #(:urgency %)))
 
 (defn remove-codelet
   "Probabilistically pick a low-urgency codelet to be discarded"
   [central]
-  (pick-codelet-by-formula central #(/ 1 %)))
+  (pick-codelet-by-formula central #(/ 1 (:urgency %))))
 
 (defn remove-codelets 
   "Remove n codelets"
@@ -30,18 +34,36 @@
   (dotimes [_ n] (remove-codelet central)))
 
 (defn add-codelet 
-  "Add a new codelet to the coderack"
-  [central codelet urgency]
+  "Add a new codelet to the coderack without checking for overflow"
+  [central codelet]
   (let [codelets  (:codelets (:coderack @central))]
     (swap! central
            (fn [central]
              (assoc-in central [:coderack :codelets] 
-                       (concat [[urgency codelet]] codelets))))))
+                       (concat [codelet] codelets))))))
 
-(defn add-codelets 
-  "Adds a list of codelets to the coderack"
+(defn add-codelets
+  "Add several codelets to the coderack without checking for overflow"
   [central codelets]
-  (doseq [[codelet urgency] codelets] (add-codelet central codelet urgency)))
+  (doseq [codelet codelets] (add-codelet central codelet)))
+
+(defn post-codelet
+  "Posts a codelet to the coderack, removing extraneous codelets if necessary"
+  [central codelet]
+  (add-codelet central codelet)
+  (let [size              (-> @central :coderack :size)
+        n-codelets (count (-> @central :coderack :codelets))]
+    (when (> n-codelets size)
+      (remove-codelets central (- n-codelets size)))))
+
+(defn post-codelets 
+  "Post several codelets to the coderack"
+  [central codelets]
+  (doseq [codelet codelets] (post-codelet central codelet)))
+
+(defn post [central codelet-type category urgency & args]
+  "Create and post a codelet to the coderack"
+  (post-codelet central (init-codelet central codelet-type category urgency args)))
 
 (defn add-updater [central updater]
   "Adds an updater to the coderack"
@@ -50,6 +72,30 @@
            (fn [central]
              (assoc-in central [:coderack :updaters] (concat [updater] updaters))))))
 
+(defn create-updater [central codelet-type & args]
+  (add-updater central (init-codelet central codelet-type nil nil args)))
+
+(defn run-next [library central]
+  "Runs a codelet by id"
+  (let [picked (pick-codelet central)]
+    (run-codelet library picked central)))
+
+(defn run-updates [library central]
+  "Runs updaters in the coderack"
+  (let [updaters (:updaters (:coderack @central))]
+    (doall (map #(run-codelet library % central) updaters))))
+
+(defn coderack-step [library central]
+  "Run one step of the coderack"
+  (run-next library central)
+  (run-updates library central))
+
+(defn empty-coderack [library central]
+  "Delete the list of active codelets"
+  (swap! central
+    (fn [central]
+      (assoc-in central [:coderack :codelets] []))))
+
 (defmacro def-codelet [library id args body-list]
   "Defines a codelet in a codelet library"
   `(swap! ~library
@@ -57,61 +103,3 @@
        (assoc state# (keyword ~id)
          (fn ~args ~body-list)))))
 
-(defn run-codelet [library id central]
-  "Runs a codelet by id"
-  (let [codelet ((keyword id) @library)]
-    (apply codelet [central])))
-
-(defn run-updates [library central]
-  "Runs updaters in the coderack"
-  (let [updaters (:updaters (:coderack @central))]
-    (doall (map #(run-codelet library % central) updaters))))
-
-;(defflavor coderack-bin
-;  (vector urgency-code relative-urgency-sum 
-;   codelet-in-bin-probability pname)	  
-;  ()
-;  :gettable-instance-variables
-;  :settable-instance-variables
-;  :initable-instance-variables)
-;
-;(defmethod (coderack :empty) ()
-;; Empty out the coderack.
-;  (loop for codelet in (send *coderack* :codelet-list) do
-;	(send self :delete-codelet-from-graphics codelet))
-;  (loop for bin in *coderack-bins* do
-;        (send bin :set-fill-pointer 0))
-;  (setq *codelet-list* nil))
-;
-;;---------------------------------------------
-;
-;(defmethod (coderack :post) (codelet &aux bin)
-;; Posts a codelet to the coderack.  If the coderack has 
-;; %max-coderack-size% codelets, remove a codelet to make room for the new
-;; one.
-;
-;  (if* (= (send self :total-num-of-codelets) %max-coderack-size%)
-;   then (send self :remove-codelets 1)) ; Remove a codelet from the 
-;                                        ; coderack.
-;  (setq bin (send codelet :urgency-bin))
-;  (vset (send bin :vector) (send bin :fill-pointer) codelet)
-;  (send codelet :set-index-in-bin (send bin :fill-pointer))
-;  (send codelet :set-time-stamp *codelet-count*)
-;  (send bin :set-fill-pointer (1+ (send bin :fill-pointer)))
-;  (push codelet *codelet-list*)
-;  (send self :add-codelet-to-graphics codelet))
-;
-;;---------------------------------------------
-;
-;(defmethod (coderack :post-codelet-list) (codelet-list &aux num-to-remove)
-;; See how many codelets have to be removed.  Remove them, and then
-;; post the codelets on this list.
-;  (setq num-to-remove 
-;	(- (+ (send *coderack* :total-num-of-codelets)
-;	      (length codelet-list))
-;	   %max-coderack-size%))
-;  (if* (> num-to-remove 0)
-;   then (send *coderack* :remove-codelets num-to-remove))
-;  (loop for codelet in codelet-list do
-;	(send *coderack* :post-without-removing codelet)))
-;

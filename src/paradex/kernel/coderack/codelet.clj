@@ -1,43 +1,15 @@
+(ns paradex.kernel.coderack.codelet)
 
-;(defflavor codelet
-;  (codelet-type ; E.g., bottom-up-bond-scout.
-;   arguments 
-;   urgency-bin ; E.g., %very-high-bin%
-;   (index-in-bin nil) ; This codelet's position in its urgency bin.
-;   (time-stamp nil) ; The time (in codelet-steps) when this codelet was 
-;                    ; posted
-;   structure-category) ; E.g., 'bond.
-;  ()
-;  :gettable-instance-variables
-;  :settable-instance-variables
-;  :initable-instance-variables)
+(defrecord Codelet [codelet-type category args urgency time-stamp])
 
-;(defmethod (codelet :print) ()
-;  (format t "codelet-type: ~a, arguments: ~a" codelet-type arguments)
-;  (format t " urgency-bin ~a, time-stamp ~a,~&" 
-;	  (send urgency-bin :pname) time-stamp)
-;  (format t "~%"))
-;
-;(defmethod (codelet :run) ()
-;; This is the method that runs the codelet.    
-;  (apply codelet-type arguments))
-;
-;(defmethod (codelet :remove-probability) ()
-;; Returns the probability of removing this codelet from the coderack
-;; (a function of the codelet's urgency and age).
-;; The 1+ allows some probability for codelets with the highest urgency
-;; to be removed.
-;  (* (- *codelet-count* time-stamp) 
-;     (1+ (- (send *extremely-high-bin* :urgency-value)
-;	    (send urgency-bin :urgency-value)))))
-;
-;(defun make-codelet (codelet-type arguments urgency-bin-name 
-;	             &optional structure-category)
-;; Returns a new codelet.
-;  (make-instance 'codelet 
-;      :codelet-type codelet-type
-;      :arguments arguments
-;      :urgency-bin (eval urgency-bin-name)
-;      :structure-category structure-category))
-;      
-;;---------------------------------------------
+(defn run-codelet [library codelet central]
+  "Runs a codelet"
+  (let [skeleton ((:codelet-type codelet) @library)]
+    (apply skeleton (concat [central] (:args codelet)))))
+
+(defn init-codelet 
+  ([central codelet-type category args]
+   (init-codelet codelet-type category args 1))
+  ([central codelet-type category urgency args]
+   (let [time-stamp (-> central :iterations)]
+     (Codelet. codelet-type category args urgency time-stamp))))

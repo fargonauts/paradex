@@ -1,0 +1,4 @@
+#!/bin/bash 
+
+lein marg
+w3m docs/uberdoc.html || firefox docs/uberdoc.html

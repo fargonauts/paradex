@@ -7,28 +7,30 @@
 (defn create-central []
   (atom {:slipnet   {:nodes {} :links {}}
          :workspace {}
-         :coderack  {:codelets '()
-                     :updaters '()}}))
+         :coderack (init-coderack 100)
+         :iterations 0}))
 
 (def codelet-library (atom {}))
 
 (defmacro def-clet [id args body]
   `(def-codelet codelet-library ~id ~args ~body))
 
-(def-clet "x" [central] (do (println "ran x") ));(add-codelet central :y 1)))
-(def-clet "y" [central] (do (println "ran y") ));(add-codelet central :z 1))) 
-(def-clet "z" [central] (do (println "ran z") ));(add-codelet central :y 1) (add-codelet central :y 2)))
+(def-clet "x" [central n] (do (println (str "ran x" n))))
+(def-clet "y" [central n] (do (println (str "ran y" n))))
+(def-clet "z" [central n] (do (println (str "ran z" n))))
 
 (def-clet "status" [central] (do (println "status!") (println central)))
 (def-clet "slipnet-update" [central] (slipnet-update central))
 
 (def central (create-central))
 
+;(defn post [central codelet-type category urgency & args]
+
 (defn initialize [central]
-  (add-codelet central :x 1)
-  (add-codelet central :x 1)
-  (add-updater central :status)
-  (add-updater central :slipnet-update)
+  (post central :x nil 1 200)
+  (post central :x nil 1 300)
+  (create-updater central :status)
+  (create-updater central :slipnet-update)
   (create-node central "a" 100 90 [:x])
   (create-node central "b" 100 90 [:x])
   (create-link central "a" "b" nil nil 100 true))
@@ -49,15 +51,13 @@
   (add-object  central [:left] '(2 4 6)))
 
 (defn main-loop []
+  (println central) 
   (initialize central)
   ;(initialize-nbongard central)
+  (println "here")
   (println central) 
   (loop []
-    (let [picked (pick-codelet central)]
-      ;(println picked)
-      (run-codelet codelet-library picked central)
-      (run-updates codelet-library central))
-      ;(println central))
+    (coderack-step codelet-library central)
     (if (empty? (:codelets (:coderack @central)))
       (println "Empty coderack, finishing..")
       (recur))))

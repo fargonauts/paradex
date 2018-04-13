@@ -38,3 +38,6 @@ quit
 quit
 (keyword :x)
 quit
+(keyword "x")
+q
+quit
