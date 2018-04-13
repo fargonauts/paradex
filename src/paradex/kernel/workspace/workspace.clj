@@ -1,9 +1,12 @@
 (ns paradex.kernel.workspace.workspace)
 
-(defn add-object [central ks object]
-  (swap! central
-         (fn [central]
-           (assoc central (concat [:workspace] ks) object))))
+(defrecord Workspace [])
+(defn init-workspace [] (Workspace.))
+
+;(defn add-object [central ks object]
+;  (swap! central
+;         (fn [central]
+;           (assoc central (concat [:workspace] ks) object))))
 ;---------------------------------------------
 ; WORKSPACE: This file contains flavor definitions and methods for the 
 ;            workspace.

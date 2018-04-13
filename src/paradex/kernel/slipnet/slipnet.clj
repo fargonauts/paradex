@@ -2,26 +2,24 @@
   (:require [paradex.kernel.slipnet.formulas   :refer :all]
             [paradex.kernel.coderack.coderack  :refer :all]))
 
-; Node
-;  - activation
-;  - (conceptual) depth
-;  - name
-;  - links
-;  - codelets associated
-
-; Link
-;  - from
-;  - to
-;  - type
-;  - label
-;  - fixed length
-
 ; Slipnet
 ;  - Nodes
 ;  - Links
 
-; That easy
-;
+(defrecord Slipnet [nodes links])
+
+(defn init-slipnet [] (Slipnet. {} {}))
+
+;(defrecord Node [activation 
+;                 intrinsic-length 
+;                 shrunk-length 
+;                 depth 
+;                 id 
+;                 links 
+;                 codelets 
+;                 iterate-group])
+
+;(defrecord Link [from to kind label fixed-length])
 ; (def slipnet (atom {
 ;     :nodes {:a {:activation 100 :depth 50 :associated ["x" "y"]}
 ;             :b {:activation 100 :depth 50 :associated ["x" "y"]}}
@@ -89,126 +87,7 @@
     (doseq [[k link] links]
       (add-link central k (update-link central link)))))
 
-;(defflavor slipnode 
-;    (activation 
-;     activation-buffer ; A buffer for storing activation between updates.
-;     (clamp nil) ; If this is t, then the activation of the node is clamped
-;                 ; to 100.
-;
-;     (intrinsic-link-length nil) ; The intrinsic link-length of this links
-;                                 ; labeled by this node.
-;     (shrunk-link-length nil)  ; For now this is .4 of the intrinsic 
-;                               ; link-length
-;     conceptual-depth
-;
-;     pname  ; A string giving the name of this node.
-;     symbol-name ; A symbol giving the name of this node.
-;     short-name ; A string to use for slipnet graphics.
-;     cm-name ; A string to use for concept-mapping graphics.
-;
-;     (category-links nil)  
-;     (instance-links nil)
-;     (has-property-links nil)
-;     (lateral-slip-links nil)
-;     (lateral-nonslip-links nil)
-;     (incoming-links nil)
-;
-;     (codelets nil)  ; A list of codelets attached to this node.
-;
-;     (description-tester nil) ; A function for testing if this node
-;                              ; can be used as a descriptor for some object.
-;
-;     (iterate-group nil) ; For nodes representing groups, a function used to 
-;                         ; iterate the group (e.g., if succgrp is given "a", it
-;                         ; will return "b").
-;
-;     graphics-obj ; The graphics object representing this node.
-;    )
-;					   
-;  ()
-;  :gettable-instance-variables
-;  :settable-instance-variables
-;  :initable-instance-variables)
-;
-;;---------------------------------------------
-;
-;(defmethod (slipnode :outgoing-links) ()
-;; Returns a list of the links emanating from this node.
-;  (append category-links instance-links has-property-links lateral-slip-links 
-;	  lateral-nonslip-links))
-;
-;;---------------------------------------------
-;
-;(defmethod (slipnode :active?) ()
-;  (= activation 100))
-;
-;;---------------------------------------------
-;
-;(defmethod (slipnode :directed?) ()
-;; Returns t if the slipnode represents a directed bond or group.
-;  (or (eq self plato-predecessor) (eq self plato-successor) 
-;      (eq self plato-predgrp) (eq self plato-succgrp)))
-;
-;;---------------------------------------------
-;
-;(defmethod (slipnode :category) ()
-;; Returns the category that this node belongs to (e.g., "leftmost"
-;; belongs to "string-position-category").  For now this assumes that
-;; each node belongs to at most one cateogry.  
-;; For the time being this doesn't affect anything, but it eventually should be
-;; fixed.
-;  (if* category-links then (send (car category-links) :to-node) else nil))
-;
-;;---------------------------------------------
-;
-;(defflavor slipnet-link 
-;    (from-node to-node (label nil) (fixed-length nil))
-;    ; If a link has no label, then it is assigned a fixed length.
-;    ()
-;  :gettable-instance-variables
-;  :settable-instance-variables
-;  :initable-instance-variables)
-;
-;;---------------------------------------------
-;
-;(defmethod (slipnet-link :intrinsic-degree-of-association) ()
-;  (if* fixed-length
-;   then (fake-reciprocal fixed-length)
-;   else (send label :intrinsic-degree-of-association)))
-;
-;;---------------------------------------------
-;
-;(defmethod (slipnode :intrinsic-degree-of-association) ()
-;  (fake-reciprocal intrinsic-link-length))
-;
-;;---------------------------------------------
-;
-;(defmethod (slipnet-link :degree-of-association) ()
-;  (if* fixed-length
-;   then (fake-reciprocal fixed-length)
-;   else (send label :degree-of-association)))
-;
-;;---------------------------------------------
-;
-;(defmethod (slipnode :degree-of-association) ()
-;; Returns the degree-of-association encoded in the links this node labels.
-;  (if* (send self :active?) 
-;   then (fake-reciprocal shrunk-link-length)
-;   else (fake-reciprocal intrinsic-link-length)))
-;   
-;;---------------------------------------------
-;
-;(defmethod (slipnode :similar-has-property-links) ()
-;  (loop for link in has-property-links 
-;	when (eq (flip-coin (get-temperature-adjusted-probability
-;				(/ (send link :degree-of-association) 100))) 
-;		 'heads)
-;	collect link))
-;
-;;---------------------------------------------
-
 ;---------------------------------------------
-
 ;(defun get-label-node (from-node to-node)
 ;; Returns the node representing the label of the link from FROM-NODE to 
 ;; TO-NODE.  Returns nil if the link has no label. For now, I am assuming 
@@ -218,37 +97,6 @@
 ;   else (loop for link in (send from-node :outgoing-links)
 ;              when (eq (send link :to-node) to-node)
 ;              return (send link :label))))
-;
-;;---------------------------------------------
-;
-;(defmethod (slipnode :get-related-node) (relation)
-;; Returns the node related to the given node by the given relation
-;; (e.g., if given "left" and "opposite", returns "right").
-;  (if* (eq relation plato-identity)
-;   then self
-;   else (loop for link in (send self :outgoing-links)
-;	      when (eq (send link :label) relation)
-;              return (send link :to-node))))
-;
-;;---------------------------------------------
-;
-;(defmethod (slipnode :apply-slippages) (slippage-list)
-;; Returns the node that is the translation of the given node
-;; according to the given slippage list.
-;  (loop for s in slippage-list 
-;	when (eq (send s :descriptor1) self)
-;	return (send s :descriptor2)
-;	finally (return self)))
-;
-;;---------------------------------------------
-;
-;(defmethod (slipnode :get-possible-descriptors) (object &aux instance)
-;; Returns a list of the instances of the given node that could be used
-;; as descriptors for the given object.
-;  (loop for link in instance-links do    
-;	(setq instance (send link :to-node))
-;	when (funcall (send instance :description-tester) object)
-;	collect instance))
 ;
 ;;---------------------------------------------
 ;
@@ -279,14 +127,6 @@
 ;
 ;(defmethod (slipnode :subtract-activation-from-buffer) (activation-to-subtract)
 ;  (decf activation-buffer activation-to-subtract))
-;
-;;---------------------------------------------
-;
-;(defmethod (slipnode :decay) ()
-;; A node loses (100 - conceptual-depth) percent of its activation.
-;  (send self :subtract-activation-from-buffer 
-;             (round (* (/ (fake-reciprocal (send self :conceptual-depth)) 100)
-;		       (send self :activation)))))
 ;
 ;;---------------------------------------------
 ;

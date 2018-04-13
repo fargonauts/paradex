@@ -75,6 +75,12 @@
 (defn create-updater [central codelet-type & args]
   (add-updater central (init-codelet central codelet-type nil nil args)))
 
+(defn empty-coderack [central]
+  "Delete the list of active codelets"
+  (swap! central
+    (fn [central]
+      (assoc-in central [:coderack :codelets] []))))
+
 (defn run-next [library central]
   "Runs a codelet by id"
   (let [picked (pick-codelet central)]
@@ -90,16 +96,4 @@
   (run-next library central)
   (run-updates library central))
 
-(defn empty-coderack [library central]
-  "Delete the list of active codelets"
-  (swap! central
-    (fn [central]
-      (assoc-in central [:coderack :codelets] []))))
-
-(defmacro def-codelet [library id args body-list]
-  "Defines a codelet in a codelet library"
-  `(swap! ~library
-     (fn [state#]
-       (assoc state# (keyword ~id)
-         (fn ~args ~body-list)))))
 

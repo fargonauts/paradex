@@ -16,3 +16,6 @@
    (let [final (keep-indexed #(if (not= %1 n) %2) coll)]
      (println final)
      final))
+
+(defn inv-100 [n]
+  (- 100 n))

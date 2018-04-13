@@ -1,6 +1,7 @@
 (ns paradex.core
   (:require [clojure.tools.cli :refer [cli]]
-            [paradex.kernel.drivers :refer :all])
+            [paradex.kernel.central :refer [init-central run]]
+            [paradex.lib.domain     :refer [init-domain]])
   (:gen-class))
 
 (defn -main [& in-args]
@@ -9,5 +10,4 @@
      :default false :flag true])]
     (when (:help opts)
       (println banner))
-    (println args)
-    (main-loop)))
+    (run (init-central) (init-domain))))
