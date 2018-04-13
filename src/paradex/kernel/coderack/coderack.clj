@@ -75,7 +75,7 @@
 (defn create-updater [central codelet-type & args]
   (add-updater central (init-codelet central codelet-type nil nil args)))
 
-(defn empty-coderack [central]
+(defn clear-coderack [central]
   "Delete the list of active codelets"
   (swap! central
     (fn [central]
@@ -95,5 +95,3 @@
   "Run one step of the coderack"
   (run-next library central)
   (run-updates library central))
-
-

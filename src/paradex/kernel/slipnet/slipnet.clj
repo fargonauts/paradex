@@ -1,45 +1,24 @@
 (ns paradex.kernel.slipnet.slipnet
-  (:require [paradex.kernel.slipnet.formulas   :refer :all]
-            [paradex.kernel.coderack.coderack  :refer :all]))
-
-; Slipnet
-;  - Nodes
-;  - Links
+  (:require [paradex.kernel.coderack.coderack :refer :all]
+            [paradex.kernel.slipnet.formulas  :refer :all]
+            [paradex.kernel.slipnet.links     :refer :all]
+            [paradex.kernel.slipnet.link      :refer :all]
+            [paradex.kernel.slipnet.node      :refer :all]))
 
 (defrecord Slipnet [nodes links])
 
 (defn init-slipnet [] (Slipnet. {} {}))
 
-;(defrecord Node [activation 
+;(defrecord Node [id 
+;                 activation
 ;                 intrinsic-length 
 ;                 shrunk-length 
 ;                 depth 
-;                 id 
 ;                 links 
 ;                 codelets 
 ;                 iterate-group])
 
 ;(defrecord Link [from to kind label fixed-length])
-; (def slipnet (atom {
-;     :nodes {:a {:activation 100 :depth 50 :associated ["x" "y"]}
-;             :b {:activation 100 :depth 50 :associated ["x" "y"]}}
-;     :links {:a {:to :b :type nil :label nil :length 50 :fixed false}}
-;   }))
-
-(defn build-node [activation depth id associated]
-  {:activation activation
-   :depth      depth
-   :id         id
-   :associated associated 
-   })
-
-(defn build-link [to t label length fixed]
-  {:to     to
-   :type   t
-   :label  label
-   :length length
-   :fixed  fixed
-   })
 
 (defn- add-nested [central k1 k2 v]
   (swap! central
@@ -52,31 +31,50 @@
 (defn add-link [central k v]
   (add-nested central :links k v))
 
-(defn create-node [central id activation depth associated]
-  (add-node central id (build-node activation depth id associated)))
+(defn create-node [central id & args]
+  (add-node central id (apply Node. (concat [id] args))))
 
-(defn create-link [central from to t label length fixed]
-  (add-link central from (build-link to t label length fixed)))
+(defn create-link [central from & args]
+  (add-link central from (apply Link. (concat [from] args))))
 
 (defn decay [node]
   (let [depth      (:depth node)
         activation (:activation node)]
     (assoc node :activation (decay-formula activation depth))))
 
-;(defn post-codelets [central node]
-;  )
-  ;(let [activation (:activation node)]
-  ;        (when (activation-post-threshold activation)
-  ;          (doseq [id (:associated node)]
-  ;            (add-codelet central id (urgency-post-formula activation))))))
+(defn attempt-post-codelets [central node]
+  (let [activation (:activation node)]
+    when (activation-post-threshold activation)
+      doseq [id (:codelets node)]
+       (add-codelet central id (urgency-post-formula activation))))
+
+;(defmethod (slipnode :get-codelets) ()
+;  (loop for codelet in codelets do 
+;; Decide whether or not to post this codelet, and if so, how many
+;; copies to post.
+;        (if* (eq (flip-coin (get-post-codelet-probability 
+;				(send codelet :structure-category))) 'heads)
+;         then (loop for i from 1 to (get-num-of-codelets-to-post
+;					(send codelet :structure-category)) do
+;                    (push (make-codelet (send codelet :codelet-type)
+;			                (send codelet :arguments)
+;                                        (get-urgency-bin 
+;                                                (* (send self :activation)
+;						   (/ (send self :conceptual-depth) 
+;						      100))))
+;                           *codelets-to-post*)))))
+;						   
+;;---------------------------------------------
 
 (defn update-node [central node]
-  ;(post-codelets central node)
+  (attempt-post-codelets central node)
   (decay node))
 
 (defn update-link [central link]
   ; TODO: Shrink in proportion to label node
   link)
+
+;(defn)
 
 (defn slipnet-update [central]
   (let [slipnet (:slipnet @central)
@@ -86,6 +84,16 @@
       (add-node central k (update-node central node)))
     (doseq [[k link] links]
       (add-link central k (update-link central link)))))
+
+
+(defn reset-slipnet 
+  "Sets activation to 0 for every node in the slipnet"
+  [central]
+  (let [slipnet (:slipnet @central)
+        nodes   (:nodes slipnet)
+        links   (:links slipnet)]
+    (doseq [[k node] nodes]
+      (add-node central k (reset-node node)))))
 
 ;---------------------------------------------
 ;(defun get-label-node (from-node to-node)
@@ -97,16 +105,6 @@
 ;   else (loop for link in (send from-node :outgoing-links)
 ;              when (eq (send link :to-node) to-node)
 ;              return (send link :label))))
-;
-;;---------------------------------------------
-;
-;(defun clear-slipnet ()
-;; Sets activation to 0 for each node in the slipnet.
-;  (loop for node in *slipnet* do
-;	(send node :set-activation-buffer 0)
-;	(send node :set-activation 0)))
-;
-;;---------------------------------------------
 ;
 
 ;--------------------------------------------- 
@@ -174,33 +172,3 @@
 ;	             then (send node :set-activation %max-activation%))))
 ;
 ;        (send node :set-activation-buffer 0)))
-;
-;
-;;---------------------------------------------
-;
-;(defun get-top-down-codelets ()
-;; Returns a list of top-down codelets, attached to active nodes, to be posted.
-;  (loop for node in *slipnet* do
-;        (if* (and (>= (send node :activation) %full-activation-threshold%)
-;		  (send node :codelets))
-;	 then (send node :get-codelets))))
-;  
-;;---------------------------------------------
-;
-;(defmethod (slipnode :get-codelets) ()
-;  (loop for codelet in codelets do 
-;        ; Decide whether or not to post this codelet, and if so, how many
-;	; copies to post.
-;        (if* (eq (flip-coin (get-post-codelet-probability 
-;				(send codelet :structure-category))) 'heads)
-;         then (loop for i from 1 to (get-num-of-codelets-to-post
-;					(send codelet :structure-category)) do
-;                    (push (make-codelet (send codelet :codelet-type)
-;			                (send codelet :arguments)
-;                                        (get-urgency-bin 
-;                                                (* (send self :activation)
-;						   (/ (send self :conceptual-depth) 
-;						      100))))
-;                           *codelets-to-post*)))))
-;						   
-;;---------------------------------------------

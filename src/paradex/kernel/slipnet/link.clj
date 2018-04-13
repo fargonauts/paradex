@@ -6,6 +6,7 @@
 
 ; Link types: (defrecord Links [category instance property lateral-slip lateral-non-slip incoming])
 
+(def link-types [:category :instance :property :slip :non-slip :incoming])
 (defrecord Link [from to kind label fixed-length])
 
 ;(defn link-intrinsic-association 
@@ -13,8 +14,6 @@
 ;  (if-let [fixed-length (:fixed-length link)]
 ;    (100-inverse fixed-length)
 ;    ("Get the intrinstic association in a node")))
-;
-;(defn )
 
 ;;---------------------------------------------
 ;

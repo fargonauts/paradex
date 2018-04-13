@@ -1,54 +1,38 @@
 (ns paradex.kernel.slipnet.node)
 
-;Link types: (defrecord Links [category instance property lateral-slip lateral-non-slip incoming])
-
-(defrecord Node [activation 
+(defrecord Node [id
+                 activation 
                  intrinsic-length 
                  shrunk-length 
                  depth 
-                 id 
-                 links 
+                 links ; Shorted from several link-specific members
                  codelets 
                  iterate-group])
 
-;(defflavor slipnode 
-;    (activation 
-;     activation-buffer ; A buffer for storing activation between updates.
+; Unimplemented node features:
+;
+;     Clamp used??
 ;     (clamp nil) ; If this is t, then the activation of the node is clamped
 ;                 ; to 100.
 ;
-;     (intrinsic-link-length nil) ; The intrinsic link-length of this links
-;                                 ; labeled by this node.
-;     (shrunk-link-length nil)  ; For now this is .4 of the intrinsic 
-;                               ; link-length
-;     conceptual-depth
-;
-;     id
-;
-;     (category-links nil)  
-;     (instance-links nil)
-;     (has-property-links nil)
-;     (lateral-slip-links nil)
-;     (lateral-nonslip-links nil)
-;     (incoming-links nil)
-;
-;     (codelets nil)  ; A list of codelets attached to this node.
+;     I'm not sure I like these (seems ad-hoc). Is there a better way? 
 ;
 ;     (description-tester nil) ; A function for testing if this node
 ;                              ; can be used as a descriptor for some object.
+;
 ;
 ;     (iterate-group nil) ; For nodes representing groups, a function used to 
 ;                         ; iterate the group (e.g., if succgrp is given "a", it
 ;                         ; will return "b").
 ;
 
-;(defn links-from [node] (:links node))
-(defn active?   [node] (= (:activation node) 100))
+(defn reset-node [node]
+  (assoc node :activation 0))
 
-;(defn directed? [node] 
-;  (or (= )
-;      ()))
+(defn active? [node] (= (:activation node) 100))
 
+
+; Seems domain specific:
 ;(defmethod (slipnode :directed?) ()
 ;; Returns t if the slipnode represents a directed bond or group.
 ;  (or (eq self plato-predecessor) (eq self plato-successor) 
