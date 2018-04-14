@@ -1,5 +1,5 @@
 (ns paradex.kernel.slipnet.link
-  (:require [paradex.kernel.base :refer [100-inverse]]))
+  (:require [paradex.kernel.base :refer [inv-100]]))
 
 ; label and length are exclusively optional 
 ; (if a link has no label, then it is assigned a fixed length).

@@ -32,10 +32,10 @@
   (add-nested central :links k v))
 
 (defn create-node [central id & args]
-  (add-node central id (apply Node. (concat [id] args))))
+  (add-node central id (apply ->Node (concat [id] args))))
 
 (defn create-link [central from & args]
-  (add-link central from (apply Link. (concat [from] args))))
+  (add-link central from (apply ->Link (concat [from] args))))
 
 (defn decay [node]
   (let [depth      (:depth node)
@@ -44,9 +44,9 @@
 
 (defn attempt-post-codelets [central node]
   (let [activation (:activation node)]
-    when (activation-post-threshold activation)
-      doseq [id (:codelets node)]
-       (add-codelet central id (urgency-post-formula activation))))
+    (when (activation-post-threshold activation)
+      (doseq [id (:codelets node)]
+        (add-codelet central id (urgency-post-formula activation))))))
 
 ;(defmethod (slipnode :get-codelets) ()
 ;  (loop for codelet in codelets do 

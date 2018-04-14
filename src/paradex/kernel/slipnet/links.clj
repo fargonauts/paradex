@@ -8,6 +8,6 @@
 
 ;(def link-types [:category :instance :property :slip :non-slip :incoming])
 
-(defn )
+;(defn )
 
 
