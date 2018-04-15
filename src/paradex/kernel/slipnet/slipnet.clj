@@ -63,8 +63,6 @@
 ;						   (/ (send self :conceptual-depth) 
 ;						      100))))
 ;                           *codelets-to-post*)))))
-;						   
-;;---------------------------------------------
 
 (defn update-node [central node]
   (attempt-post-codelets central node)
@@ -73,8 +71,6 @@
 (defn update-link [central link]
   ; TODO: Shrink in proportion to label node
   link)
-
-;(defn)
 
 (defn slipnet-update [central]
   (let [slipnet (:slipnet @central)
@@ -172,3 +168,66 @@
 ;	             then (send node :set-activation %max-activation%))))
 ;
 ;        (send node :set-activation-buffer 0)))
+
+;(defn node-category [node]
+;  (let [category-links (-> node :links :category)]
+;    (:to ())))
+
+;(defmethod (slipnode :similar-has-property-links) ()
+;  (loop for link in has-property-links 
+;	when (eq (flip-coin (get-temperature-adjusted-probability
+;				(/ (send link :degree-of-association) 100))) 
+;		 'heads)
+;	collect link))
+;
+;;---------------------------------------------
+;
+;(defmethod (slipnode :get-related-node) (relation)
+;; Returns the node related to the given node by the given relation
+;; (e.g., if given "left" and "opposite", returns "right").
+;  (if* (eq relation plato-identity)
+;   then self
+;   else (loop for link in (send self :outgoing-links)
+;	      when (eq (send link :label) relation)
+;              return (send link :to-node))))
+;
+;;---------------------------------------------
+;
+;(defmethod (slipnode :apply-slippages) (slippage-list)
+;; Returns the node that is the translation of the given node
+;; according to the given slippage list.
+;  (loop for s in slippage-list 
+;	when (eq (send s :descriptor1) self)
+;	return (send s :descriptor2)
+;	finally (return self)))
+;
+;;---------------------------------------------
+;
+;(defmethod (slipnode :get-possible-descriptors) (object &aux instance)
+;; Returns a list of the instances of the given node that could be used
+;; as descriptors for the given object.
+;  (loop for link in instance-links do    
+;	(setq instance (send link :to-node))
+;	when (funcall (send instance :description-tester) object)
+;	collect instance))
+;
+;;---------------------------------------------
+;
+;(defmethod (slipnode :intrinsic-degree-of-association) ()
+;  (fake-reciprocal intrinsic-link-length))
+;
+;;---------------------------------------------
+;
+;(defmethod (slipnode :degree-of-association) ()
+;; Returns the degree-of-association encoded in the links this node labels.
+;  (if* (send self :active?) 
+;   then (fake-reciprocal shrunk-link-length)
+;   else (fake-reciprocal intrinsic-link-length)))
+;   
+;;---------------------------------------------
+
+; Seems domain specific:
+;(defmethod (slipnode :directed?) ()
+;; Returns t if the slipnode represents a directed bond or group.
+;  (or (eq self plato-predecessor) (eq self plato-successor) 
+;      (eq self plato-predgrp) (eq self plato-succgrp)))

@@ -10,11 +10,11 @@
 (defrecord Link [from to kind label fixed-length])
 
 ;(defn link-intrinsic-association 
-;  [link]
+;  [central link]
 ;  (if-let [fixed-length (:fixed-length link)]
-;    (100-inverse fixed-length)
-;    ("Get the intrinstic association in a node")))
-
+;    (inv-100 fixed-length)
+;    ("Get node association")))
+;
 ;;---------------------------------------------
 ;
 ;(defmethod (slipnet-link :intrinsic-degree-of-association) ()
