@@ -30,3 +30,5 @@
 ;   else (send label :degree-of-association)))
 ;
 ;;---------------------------------------------
+
+(defn init-links [] (into {} (for [kind link-types] [kind {}])))
