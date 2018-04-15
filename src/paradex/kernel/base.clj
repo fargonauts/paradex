@@ -19,3 +19,9 @@
 
 (defn inv-100 [n]
   (- 100 n))
+
+(defn add-in [dict kc v]
+  (let [current (get-in dict kc)]
+    (if (nil? current)
+      (assoc-in dict kc [v])
+      (assoc-in dict kc (concat [v] current)))))

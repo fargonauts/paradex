@@ -40,14 +40,14 @@
 (deftest test-slipnet
   (testing "Tests independent slipnet functions"
     (let [central (init-central)]
-      (create-node central :predecessor 100 20 20 30 (init-links) [] nil)
-      (create-node central :successor   100 20 20 30 (init-links) [] nil)
+      (create-node central :predecessor 100 20 30 [] nil)
+      (create-node central :successor   100 20 30 [] nil)
 
-      (create-node central :a 100 20 20 10 (init-links) [] nil)
-      (create-node central :b 100 20 20 10 (init-links) [] nil)
+      (create-node central :a 100 20 10 [] nil)
+      (create-node central :b 100 20 10 [] nil)
 
-      (create-link central :a :b :lateral :successor   nil)
-      (create-link central :b :a :lateral :predecessor nil)
+      (create-link central :a :b :lateral :successor  )
+      (create-link central :b :a :lateral :predecessor)
       )
     (is (= 1 1))))
 

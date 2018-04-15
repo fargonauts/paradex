@@ -2,13 +2,14 @@
   (:require [paradex.kernel.coderack.coderack :refer :all]
             [paradex.kernel.slipnet.formulas  :refer :all]
             [paradex.kernel.slipnet.link      :refer :all]
+            [paradex.kernel.slipnet.links     :refer :all]
             [paradex.kernel.slipnet.node      :refer :all]))
 
 (defrecord Slipnet [nodes links])
 ; Nodes is a dictionary by id
 ; links is dictionary by from key
 
-(defn init-slipnet [] (Slipnet. {} {}))
+(defn init-slipnet [] (Slipnet. {} (->Links {} {})))
 
 ;(defrecord Node [id 
 ;                 activation
@@ -23,20 +24,17 @@
 
 (defn- add-nested [central k1 k2 v]
   (swap! central
-         (fn [central]
-           (assoc-in central [:slipnet k1 k2] v))))
+    (fn [central]
+      (assoc-in central [:slipnet k1 k2] v))))
 
 (defn add-node [central k v]
   (add-nested central :nodes k v))
 
-(defn add-link [central k v]
-  (add-nested central :links k v))
-
 (defn create-node [central id & args]
-  (add-node central id (apply ->Node (concat [id] args))))
+  (add-node central id (apply init-node (concat [id] args))))
 
-(defn create-link [central from & args]
-  (add-link central from (apply ->Link (concat [from] args))))
+(defn create-link [central & args]
+  (add-link central (apply init-link args)))
 
 (defn decay [node]
   (let [depth      (:depth node)
@@ -55,18 +53,18 @@
   (attempt-post-codelets central node)
   (decay node))
 
-(defn update-link [central link]
-  ; TODO: Shrink in proportion to label node
-  link)
+;(defn update-link [central link]
+;  ; TODO: Shrink in proportion to label node
+;  link)
 
 (defn slipnet-update [central]
   (let [slipnet (:slipnet @central)
         nodes   (:nodes slipnet)
         links   (:links slipnet)]
     (doseq [[k node] nodes]
-      (add-node central k (update-node central node)))
-    (doseq [[k link] links]
-      (add-link central k (update-link central link)))))
+      (add-node central k (update-node central node)))))
+    ;(doseq [[k link] links]
+    ;  (add-link central k (update-link central link)))))
 
 
 (defn reset-slipnet 
@@ -209,3 +207,24 @@
 ;
 ;;---------------------------------------------
 ;
+;(defn link-intrinsic-association 
+;  [central link]
+;  (if-let [fixed-length (:fixed-length link)]
+;    (inv-100 fixed-length)
+;    ("Get node association")))
+;
+;;---------------------------------------------
+;
+;(defmethod (slipnet-link :intrinsic-degree-of-association) ()
+;  (if* fixed-length
+;   then (fake-reciprocal fixed-length)
+;   else (send label :intrinsic-degree-of-association)))
+;
+;;---------------------------------------------
+;
+;(defmethod (slipnet-link :degree-of-association) ()
+;  (if* fixed-length
+;   then (fake-reciprocal fixed-length)
+;   else (send label :degree-of-association)))
+;
+;;---------------------------------------------

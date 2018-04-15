@@ -1,4 +1,5 @@
-(ns paradex.kernel.slipnet.node)
+(ns paradex.kernel.slipnet.node
+  (:require [paradex.kernel.slipnet.link :refer :all]))
 
 (defrecord Node [id
                  activation 
@@ -25,6 +26,9 @@
 ;                         ; iterate the group (e.g., if succgrp is given "a", it
 ;                         ; will return "b").
 ;
+
+(defn init-node [id activation length depth codelets iterate-group]
+  (Node. id activation length length depth (init-links) codelets iterate-group))
 
 (defn reset-node [node]
   (assoc node :activation 0))
