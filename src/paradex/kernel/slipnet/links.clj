@@ -22,7 +22,7 @@
   (modify-linkdict central assoc-link link))
 
 (defn get-links [central]
-  (get-in @central [:central :slipnet :links]))
+  (get-in @central [:slipnet :links]))
 
 (defn get-to [central k]
   (get-in (get-links central) [:to-links k]))
@@ -36,4 +36,5 @@
 
 (defn get-links-for [central node]
   (let [links (get-links central)]
+    (println links)
     [(node (:from-links links)) (node (:to-links links))]))

@@ -1,9 +1,10 @@
 (ns paradex.slipnet
   (:require [clojure.test :refer :all]
             [paradex.kernel.slipnet.slipnet :refer :all]
-            [paradex.kernel.slipnet.node :refer :all]
-            [paradex.kernel.slipnet.link :refer :all]
-            [paradex.kernel.central :refer :all]))
+            [paradex.kernel.slipnet.node    :refer :all]
+            [paradex.kernel.slipnet.link    :refer :all]
+            [paradex.kernel.slipnet.links   :refer :all]
+            [paradex.kernel.central         :refer :all]))
 ; Slipnet
 
 ;  (setq plato-a 
@@ -40,21 +41,22 @@
 (deftest test-slipnet
   (testing "Tests independent slipnet functions"
     (let [central (init-central)]
-      (clojure.pprint/pprint central)
+      ;(clojure.pprint/pprint central)
       (create-node central :predecessor 100 20 30 [] nil)
       (create-node central :successor   100 20 30 [] nil)
-      (clojure.pprint/pprint central)
+      ;(clojure.pprint/pprint central)
 
       (create-node central :a 100 20 10 [] nil)
       (create-node central :b 100 20 10 [] nil)
-      (clojure.pprint/pprint central)
+      ;(clojure.pprint/pprint central)
 
       (create-link central :a :b :lateral :successor  )
-      (clojure.pprint/pprint central)
+      ;(clojure.pprint/pprint central)
       (create-link central :b :a :lateral :predecessor)
       ;(defn node-get-related [central node relation]
       (clojure.pprint/pprint central)
-      ;(println (node-get-related central :a :successor))
+      (println (get-links-for central :a))
+      (println (node-get-related central :a :successor))
       )
     (is (= 1 1))))
 
