@@ -15,8 +15,8 @@
 (defn- assoc-link [linkdict link]
   (let [kc1 [:from-links (:from link)]
         kc2 [:to-links   (:to link)]]
-    (add-in linkdict kc1
-      (add-in linkdict kc2 link))))
+    (add-in 
+      (add-in linkdict kc2 link) kc1 link)))
 
 (defn add-link [central link]
   (modify-linkdict central assoc-link link))
@@ -33,3 +33,7 @@
 (defn get-link-list [central]
   (let [links (get-links central)]
     (concat (vals (:from-links links)) (vals (:to-links links)))))
+
+(defn get-links-for [central node]
+  (let [links (get-links central)]
+    [(node (:from-links links)) (node (:to-links links))]))

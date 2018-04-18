@@ -84,9 +84,11 @@
         label   (:label link)]
     (label nodes)))
 
-;(defn node-category [central node]
-;  (let [category-links (-> node :links :category)]
-;    (central )))
+(defn node-category [node]
+  (let [category-links (-> node :links :category)]
+    (first category-links)))
+
+;(defn node-similar-property-links)
 
 ;(defmethod (slipnode :similar-has-property-links) ()
 ;  (loop for link in has-property-links 
@@ -94,9 +96,18 @@
 ;				(/ (send link :degree-of-association) 100))) 
 ;		 'heads)
 ;	collect link))
-;
-;;---------------------------------------------
-;
+
+
+; (defn get-links-for [central node]
+
+(defn node-get-related [central node relation]
+  (let [[from to] (get-links-for central node)
+        from-v (relation from)
+        to-v   (relation to)]
+    (cond from-v from-v
+          to-v   to-v
+          :else  nil)))
+
 ;(defmethod (slipnode :get-related-node) (relation)
 ;; Returns the node related to the given node by the given relation
 ;; (e.g., if given "left" and "opposite", returns "right").
@@ -105,9 +116,12 @@
 ;   else (loop for link in (send self :outgoing-links)
 ;	      when (eq (send link :label) relation)
 ;              return (send link :to-node))))
-;
-;;---------------------------------------------
-;
+
+
+(defn apply-slipagges [slippages]
+
+  )
+
 ;(defmethod (slipnode :apply-slippages) (slippage-list)
 ;; Returns the node that is the translation of the given node
 ;; according to the given slippage list.
