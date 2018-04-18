@@ -30,6 +30,9 @@
 (defn add-node [central k v]
   (add-nested central :nodes k v))
 
+(defn get-node [central k]
+  (get-in @central [:nodes k]))
+
 (defn create-node [central id & args]
   (add-node central id (apply init-node (concat [id] args))))
 
@@ -98,8 +101,6 @@
 ;	collect link))
 
 
-; (defn get-links-for [central node]
-
 (defn node-get-related [central node relation]
   (let [[from to] (get-links-for central node)]
     (concat
@@ -139,25 +140,28 @@
 ;	collect instance))
 ;
 ;;---------------------------------------------
-;
-;(defmethod (slipnode :intrinsic-degree-of-association) ()
-;  (fake-reciprocal intrinsic-link-length))
-;
-;;---------------------------------------------
-;
-;(defmethod (slipnode :degree-of-association) ()
-;; Returns the degree-of-association encoded in the links this node labels.
-;  (if* (send self :active?) 
-;   then (fake-reciprocal shrunk-link-length)
-;   else (fake-reciprocal intrinsic-link-length)))
-;   
-;;---------------------------------------------
 
-; Seems domain specific:
-;(defmethod (slipnode :directed?) ()
-;; Returns t if the slipnode represents a directed bond or group.
-;  (or (eq self plato-predecessor) (eq self plato-successor) 
-;      (eq self plato-predgrp) (eq self plato-succgrp)))
+(defn association-class [central x] (class x))
+
+(defmulti intrinsic-assocation association-class)
+(defmethod intrinsic-association Link
+  [central link]
+  (if (:fixed-length link)
+    (100-inv (:fixed-length link))
+    (association central (get-node central (:label link)))))
+(defmethod intrinsic-association Node
+  [central node]
+  (inv-100 (:intrinsic-length node)))
+
+(defmulti association association-class)
+(defmethod association Link
+  [central link]
+  (intrinsic-association central link))
+(defmethod association Node
+  [central node]
+  (if (active? node)
+    (inv-100 (:shrunk-length node))
+    (intrinsic-association central node)))
 
 ;(defun update-slipnet (&aux amount-to-spread full-activation-probability)
 ;
@@ -216,27 +220,10 @@
 ;
 ;(defmethod (slipnode :subtract-activation-from-buffer) (activation-to-subtract)
 ;  (decf activation-buffer activation-to-subtract))
-;
-;;---------------------------------------------
-;
-;(defn link-intrinsic-association 
-;  [central link]
-;  (if-let [fixed-length (:fixed-length link)]
-;    (inv-100 fixed-length)
-;    ("Get node association")))
-;
-;;---------------------------------------------
-;
-;(defmethod (slipnet-link :intrinsic-degree-of-association) ()
-;  (if* fixed-length
-;   then (fake-reciprocal fixed-length)
-;   else (send label :intrinsic-degree-of-association)))
-;
-;;---------------------------------------------
-;
-;(defmethod (slipnet-link :degree-of-association) ()
-;  (if* fixed-length
-;   then (fake-reciprocal fixed-length)
-;   else (send label :degree-of-association)))
-;
-;;---------------------------------------------
+
+; Seems domain specific:
+;(defmethod (slipnode :directed?) ()
+;; Returns t if the slipnode represents a directed bond or group.
+;  (or (eq self plato-predecessor) (eq self plato-successor) 
+;      (eq self plato-predgrp) (eq self plato-succgrp)))
+
