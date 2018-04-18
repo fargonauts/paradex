@@ -54,9 +54,17 @@
       ;(clojure.pprint/pprint central)
       (create-link central :b :a :lateral :predecessor)
       ;(defn node-get-related [central node relation]
+      (println "Central structure:")
       (clojure.pprint/pprint central)
+
+      (println "Links for A:")
       (println (get-links-for central :a))
+      (println "successor of A:")
       (println (node-get-related central :a :successor))
+
+      ;()
+
+      ;(defn node-category [node]
       )
     (is (= 1 1))))
 

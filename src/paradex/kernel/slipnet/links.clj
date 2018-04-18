@@ -36,5 +36,4 @@
 
 (defn get-links-for [central node]
   (let [links (get-links central)]
-    (println links)
     [(node (:from-links links)) (node (:to-links links))]))

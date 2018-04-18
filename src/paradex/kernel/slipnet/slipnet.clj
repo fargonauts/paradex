@@ -101,12 +101,10 @@
 ; (defn get-links-for [central node]
 
 (defn node-get-related [central node relation]
-  (let [[from to] (get-links-for central node)
-        from-v (relation from)
-        to-v   (relation to)]
-    (cond from-v from-v
-          to-v   to-v
-          :else  nil)))
+  (let [[from to] (get-links-for central node)]
+    (concat
+      (for [link from :when (= (:label link) relation)] link)
+      (for [link to   :when (= (:label link) relation)] link))))
 
 ;(defmethod (slipnode :get-related-node) (relation)
 ;; Returns the node related to the given node by the given relation
