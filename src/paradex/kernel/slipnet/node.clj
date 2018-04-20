@@ -36,3 +36,20 @@
 
 (defn active? [node] (= (:activation node) 100))
 
+(defn get-node [central node-id]
+  (get-in @central [:slipnet :nodes node-id]))
+
+(defn modify-activation [f]
+  (fn [central node-id & args]
+    (let [node (get-node central node-id)
+          activation (:activation node)]
+      (assoc node :activation-buffer (apply f activation args)))))
+
+(defn finalize-node [central node]
+  (let [activation-buffer (:activation-buffer node)]
+      (assoc
+      (assoc node :activation activation-buffer)
+        :activation-buffer 0)))
+
+(def add-activation (modify-activation +))
+(def subtract-activation (modify-activation +))

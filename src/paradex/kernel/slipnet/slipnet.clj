@@ -22,9 +22,6 @@
 (defn add-node [central k v]
   (add-nested central :nodes k v))
 
-(defn get-node [central k]
-  (get-in @central [:nodes k]))
-
 (defn create-node [central id & args]
   (add-node central id (apply init-node (concat [id] args))))
 
@@ -148,17 +145,19 @@
       (inv-100 (:shrunk-length node))
       (intrinsic-association central node))))
 
-;(defun update-slipnet (&aux amount-to-spread full-activation-probability)
-;
-;; Decay and spread activation (change buffers, not actual activation, until
-;; all nodes have been updated).
-;  (loop for node in *slipnet* do
-;
-;        (send node :decay)
-;
-;	; If node is active, spread activation to neighbors.
-;        ; Note that activation spreading uses the intrinsic link-length,
-;        ; not the shrunk link length.
+(defn update-slipnet [central]
+  ; TODO: Link updates
+  (let [slipnet (:slipnet @central)
+        nodes   (:nodes slipnet)
+        links   (:links slipnet)]
+    (doseq [[k node] nodes]
+      (add-node central k (update-node central node)))
+    (doseq [[k node] nodes]
+      (add-node central k (finalize-node central node)))))
+
+(defn spread-activation [central node]
+  )
+; (defun spread-activation
 ;	(if* (= (send node :activation) %max-activation%)
 ;         then  ; Give each neighbor the percentage of the activation
 ;               ; proportional to the inverse of its distance from the 
@@ -171,14 +170,17 @@
 ;			            (send node :activation))))
 ;		    (send (send link :to-node) 
 ;			  :add-activation-to-buffer amount-to-spread))))
-;		    
+;	; If node is active, spread activation to neighbors.
+;        ; Note that activation spreading uses the intrinsic link-length,
+;        ; not the shrunk link length.
 ;  ; Next, the actual activation of each node is updated for the next time step.
 ;  (loop for node in *slipnet* do
 ;        (send node :set-activation 
 ;	           (min %max-activation% 
 ;			(+ (send node :activation) 
 ;			   (send node :activation-buffer))))
-;
+
+;(defun reactivate
 ;        ; If node is still clamped, then activate it.
 ;	(if* (send node :clamp)
 ;	 then (send node :set-activation %max-activation%)
@@ -193,18 +195,13 @@
 ;
 ;        (send node :set-activation-buffer 0)))
 
-;(defmethod (slipnode :activate-from-workspace) ()
-;  (incf activation-buffer %workspace-activation%))
+;(defun update-slipnet (&aux amount-to-spread full-activation-probability)
 ;
-;;---------------------------------------------
+;; Decay and spread activation (change buffers, not actual activation, until
+;; all nodes have been updated).
+;  (loop for node in *slipnet* do
 ;
-;(defmethod (slipnode :add-activation-to-buffer) (activation-to-add)
-;  (incf activation-buffer activation-to-add))
-;
-;;---------------------------------------------
-;
-;(defmethod (slipnode :subtract-activation-from-buffer) (activation-to-subtract)
-;  (decf activation-buffer activation-to-subtract))
+;        (send node :decay)
 
 ; Seems domain specific:
 ;(defmethod (slipnode :directed?) ()
@@ -212,3 +209,10 @@
 ;  (or (eq self plato-predecessor) (eq self plato-successor) 
 ;      (eq self plato-predgrp) (eq self plato-succgrp)))
 
+
+
+;(defmethod (slipnode :activate-from-workspace) ()
+;  (incf activation-buffer %workspace-activation%))
+;
+;;---------------------------------------------
+;
