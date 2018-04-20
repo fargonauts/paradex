@@ -3,12 +3,16 @@
 
 (defrecord Node [id
                  activation 
+                 activation-buffer
                  intrinsic-length 
                  shrunk-length 
                  depth 
                  links ; Shorted from several link-specific members
                  codelets 
                  iterate-group])
+
+(defn init-node [id activation length depth codelets iterate-group]
+  (Node. id activation 0 length length depth (init-links) codelets iterate-group))
 
 ; Unimplemented node features:
 ;
@@ -26,9 +30,6 @@
 ;                         ; iterate the group (e.g., if succgrp is given "a", it
 ;                         ; will return "b").
 ;
-
-(defn init-node [id activation length depth codelets iterate-group]
-  (Node. id activation length length depth (init-links) codelets iterate-group))
 
 (defn reset-node [node]
   (assoc node :activation 0))

@@ -41,3 +41,12 @@ quit
 (keyword "x")
 q
 quit
+(class (Link.))
+(class (->Link asdf asdf asdf adsf asdf))
+(class (->Link asdf asdf asdf adsf))
+(class 1)
+(defrecord test [a b])
+(defrecord adsf [a b])
+(class (adsf :a :b))
+(class (adsf. :a :b))
+quit

@@ -1,5 +1,6 @@
 (ns paradex.slipnet
   (:require [clojure.test :refer :all]
+            [paradex.kernel.base            :refer :all]
             [paradex.kernel.slipnet.slipnet :refer :all]
             [paradex.kernel.slipnet.node    :refer :all]
             [paradex.kernel.slipnet.link    :refer :all]
@@ -62,9 +63,18 @@
       (println "successor of A:")
       (println (node-get-related central :a :successor))
 
-      ;()
+      (println "A:")
+      (println (get-in @central [:slipnet :nodes :a]))
 
-      ;(defn node-category [node]
+      (println "In-assoc of A")
+      (println (intrinsic-association (get-in @central [:slipnet :nodes :a]) central))
+      ;(println (intrinsic-association central (get-in @central [:slipnet :nodes :a])))
+      ;(println (macroexpand-1 (create-record TEST :id ::test)))
+      ;(println (macroexpand '(create-record TEST :id ::test)))
+      (create-record Test :first ::nil ::second 2)
+      ;(->Test 1 2)
+      ;(init-Test 1)
+
       )
     (is (= 1 1))))
 

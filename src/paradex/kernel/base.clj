@@ -25,3 +25,43 @@
     (if (nil? current)
       (assoc-in dict kc [v])
       (assoc-in dict kc (concat [v] current)))))
+
+; Macro for record with default values:
+
+; Something like...
+;(create @NAME {@FIELDS-DICT})
+
+;(defrecord @NAME [@FIELDS])
+;(defn init-@NAME [@UNGIVEN-FIELDS]
+;  @NAME. @UNGIVEN-FIELDS and DEFAULTS)
+
+; i.e.
+; (defrecord Node [id
+;                  activation 
+;                  activation-buffer
+;                  intrinsic-length 
+;                  shrunk-length 
+;                  depth 
+;                  links ; Shorted from several link-specific members
+;                  codelets 
+;                  iterate-group])
+; 
+; (defn init-node [id activation length depth codelets iterate-group]
+;   (Node. id activation 0 length length depth (init-links) codelets iterate-group))
+
+; Recall macros:
+; (defmacro def-codelet [central id args body-list]
+;   "Defines a codelet in a codelet library"
+;   `(swap! ~central
+;      (fn [state#]
+;        (assoc-in state# [:library (keyword ~id)]
+;          (fn ~args ~body-list)))))
+
+; Map destructuring
+; (defn configure [val & {:keys [debug verbose]
+
+(defmacro create-record [id & {:keys [& dict]}]
+  (let [ks (keys dict)]
+    `(do (defrecord ~(symbol id) ~(into [] (map symbol ks)))
+         (defn ~(symbol (str "init-" id)) ~(into [] (for [[k# v#] dict :when (not= v# ::nil)] k#))
+           (~(symbol (str "->" id )) (for [[k# v#] ~dict] (if (= v# ::nil) k# v#)))))))

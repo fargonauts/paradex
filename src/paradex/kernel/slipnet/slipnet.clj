@@ -3,24 +3,16 @@
             [paradex.kernel.slipnet.formulas  :refer :all]
             [paradex.kernel.slipnet.link      :refer :all]
             [paradex.kernel.slipnet.links     :refer :all]
-            [paradex.kernel.slipnet.node      :refer :all]))
+            [paradex.kernel.slipnet.node      :refer :all]
+            [paradex.kernel.base              :refer :all])
+  (:import  [paradex.kernel.slipnet.link Link]
+            [paradex.kernel.slipnet.node Node]))
 
 (defrecord Slipnet [nodes links])
 ; Nodes is a dictionary by id
 ; links is dictionary by from key
 
 (defn init-slipnet [] (Slipnet. {} (->Links {} {})))
-
-;(defrecord Node [id 
-;                 activation
-;                 intrinsic-length 
-;                 shrunk-length 
-;                 depth 
-;                 links 
-;                 codelets 
-;                 iterate-group])
-
-;(defrecord Link [from to kind label fixed-length])
 
 (defn- add-nested [central k1 k2 v]
   (swap! central
@@ -61,6 +53,7 @@
 ;  link)
 
 (defn slipnet-update [central]
+  ; TODO: Synchronous activation change via buffers
   (let [slipnet (:slipnet @central)
         nodes   (:nodes slipnet)
         links   (:links slipnet)]
@@ -91,7 +84,12 @@
   (let [category-links (-> node :links :category)]
     (first category-links)))
 
-;(defn node-similar-property-links)
+;get-temperature-adjusted-probability -> workspace feature
+
+;(defn node-similar-property-links [central node]
+;  (let [property-links (get-in @central [:slipnet :nodes node :links :property])]
+;    ()
+;    ))
 
 ;(defmethod (slipnode :similar-has-property-links) ()
 ;  (loop for link in has-property-links 
@@ -100,37 +98,24 @@
 ;		 'heads)
 ;	collect link))
 
-
 (defn node-get-related [central node relation]
-  (let [[from to] (get-links-for central node)]
-    (concat
-      (for [link from :when (= (:label link) relation)] link)
-      (for [link to   :when (= (:label link) relation)] link))))
+  (if (= relation :identity)
+    node
+    (let [[from to] (get-links-for central node)]
+      (for [link from :when (= (:label link) relation)] link))))
 
-;(defmethod (slipnode :get-related-node) (relation)
-;; Returns the node related to the given node by the given relation
-;; (e.g., if given "left" and "opposite", returns "right").
-;  (if* (eq relation plato-identity)
-;   then self
-;   else (loop for link in (send self :outgoing-links)
-;	      when (eq (send link :label) relation)
-;              return (send link :to-node))))
+(defn apply-slippages [node slippage-list]
+  (loop [slippages slippage-list]
+    (if (nil? slippages)
+      node
+      (let [[a b] (first slippages)]
+        (if (= a node)
+          b
+          (recur (rest slippages)))))))
 
+; instance-links??
 
-(defn apply-slipagges [slippages]
-
-  )
-
-;(defmethod (slipnode :apply-slippages) (slippage-list)
-;; Returns the node that is the translation of the given node
-;; according to the given slippage list.
-;  (loop for s in slippage-list 
-;	when (eq (send s :descriptor1) self)
-;	return (send s :descriptor2)
-;	finally (return self)))
-;
-;;---------------------------------------------
-;
+;(defn get-possible-descriptors [node ])
 ;(defmethod (slipnode :get-possible-descriptors) (object &aux instance)
 ;; Returns a list of the instances of the given node that could be used
 ;; as descriptors for the given object.
@@ -141,27 +126,27 @@
 ;
 ;;---------------------------------------------
 
-(defn association-class [central x] (class x))
+(defprotocol Association
+  (intrinsic-association [central x])
+  (association           [central x]))
 
-(defmulti intrinsic-assocation association-class)
-(defmethod intrinsic-association Link
-  [central link]
-  (if (:fixed-length link)
-    (100-inv (:fixed-length link))
-    (association central (get-node central (:label link)))))
-(defmethod intrinsic-association Node
-  [central node]
-  (inv-100 (:intrinsic-length node)))
+(extend-protocol Association 
 
-(defmulti association association-class)
-(defmethod association Link
-  [central link]
-  (intrinsic-association central link))
-(defmethod association Node
-  [central node]
-  (if (active? node)
-    (inv-100 (:shrunk-length node))
-    (intrinsic-association central node)))
+  Link
+  (intrinsic-assocation [link central]
+    (if (:fixed-length link)
+      (inv-100 (:fixed-length link))
+      (association central (get-node central (:label link)))))
+  (association [link central]
+    (intrinsic-association central link))
+
+  Node
+  (intrinsic-association [node central]
+    (inv-100 (:intrinsic-length node)))
+  (association [node central]
+    (if (active? node)
+      (inv-100 (:shrunk-length node))
+      (intrinsic-association central node))))
 
 ;(defun update-slipnet (&aux amount-to-spread full-activation-probability)
 ;
