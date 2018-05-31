@@ -74,8 +74,8 @@
       (create-record Test :first ::nil ::second 2)
       ;(->Test 1 2)
       ;(init-Test 1)
-
-      )
+      (update-slipnet central)
+      (run central nil))
     (is (= 1 1))))
 
 ;(defrecord Link [from to kind label fixed-length])

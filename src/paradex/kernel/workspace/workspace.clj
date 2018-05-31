@@ -3,17 +3,8 @@
 (defrecord Workspace [])
 (defn init-workspace [] (Workspace.))
 
-;(defn add-object [central ks object]
-;  (swap! central
-;         (fn [central]
-;           (assoc central (concat [:workspace] ks) object))))
-;---------------------------------------------
-; WORKSPACE: This file contains flavor definitions and methods for the 
-;            workspace.
-;---------------------------------------------
+;()
 
-;(in-package 'user)
-;
 ;(defflavor workspace
 ;; The workspace contains a list of replacements (mappings from the 
 ;; initial string to the modified string, e.g., from "abc" to "abd"),

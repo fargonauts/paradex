@@ -52,16 +52,6 @@
 ;  ; TODO: Shrink in proportion to label node
 ;  link)
 
-(defn slipnet-update [central]
-  ; TODO: Synchronous activation change via buffers
-  (let [slipnet (:slipnet @central)
-        nodes   (:nodes slipnet)
-        links   (:links slipnet)]
-    (doseq [[k node] nodes]
-      (add-node central k (update-node central node)))))
-    ;(doseq [[k link] links]
-    ;  (add-link central k (update-link central link)))))
-
 
 (defn reset-slipnet 
   "Sets activation to 0 for every node in the slipnet"
@@ -147,6 +137,17 @@
     (if (active? node)
       (inv-100 (:shrunk-length node))
       (intrinsic-association central node))))
+
+
+(defn update-slipnet [central]
+  ; TODO: Synchronous activation change via buffers
+  (let [slipnet (:slipnet @central)
+        nodes   (:nodes slipnet)
+        links   (:links slipnet)]
+    (doseq [[k node] nodes]
+      (add-node central k (update-node central node)))))
+    ;(doseq [[k link] links]
+    ;  (add-link central k (update-link central link)))))
 
 ;(defun update-slipnet (&aux amount-to-spread full-activation-probability)
 ;
