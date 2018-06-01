@@ -121,7 +121,6 @@
   (association           [central x]))
 
 (extend-protocol Association 
-
   Link
   (intrinsic-assocation [link central]
     (if (:fixed-length link)
@@ -212,4 +211,5 @@
 ;; Returns t if the slipnode represents a directed bond or group.
 ;  (or (eq self plato-predecessor) (eq self plato-successor) 
 ;      (eq self plato-predgrp) (eq self plato-succgrp)))
+
 

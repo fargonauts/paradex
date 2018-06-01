@@ -81,17 +81,17 @@
     (fn [central]
       (assoc-in central [:coderack :codelets] []))))
 
-(defn run-next [library central]
+(defn run-next [central]
   "Runs a codelet by id"
   (let [picked (pick-codelet central)]
-    (run-codelet library picked central)))
+    (run-codelet (:library @central) picked central)))
 
-(defn run-updates [library central]
+(defn run-updates [central]
   "Runs updaters in the coderack"
   (let [updaters (:updaters (:coderack @central))]
-    (doall (map #(run-codelet library % central) updaters))))
+    (doall (map #(run-codelet (:library @central) % central) updaters))))
 
-(defn coderack-step [library central]
+(defn coderack-step [central]
   "Run one step of the coderack"
-  (run-next library central)
-  (run-updates library central))
+  (run-next central)
+  (run-updates central))
