@@ -1,7 +1,12 @@
 (ns paradex.kernel.workspace.workspace)
 
-(defrecord Workspace [])
-(defn init-workspace [] (Workspace.))
+(defrecord Workspace [input space])
+(defn init-workspace [] (Workspace. {} {}))
+
+(defn reset-workspace [central ws]
+  (swap! central 
+    (fn [central] 
+      (assoc central :workspace ws))))
 
 ;()
 

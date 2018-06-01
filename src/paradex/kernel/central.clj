@@ -7,17 +7,20 @@
 
 (defrecord Central [slipnet workspace coderack library iterations])
 
-(defn init-central []
-  (atom (Central. 
-          (init-slipnet)
-          (init-workspace)
-          (init-coderack 100)
-          (init-library)
-          0)))
+(defn init-central [domain-init]
+  (if (nil? domain-init)
+      (atom (Central. 
+            (init-slipnet)
+            (init-workspace)
+            (init-coderack 100)
+            (init-library)
+            0))
+      (domain-init)))
 
 (defn run [central]
   (println "Running central")
   (loop []
     (when-not (empty? (:codelets (:coderack @central)))
+      (println @central)
       (coderack-step central)
       (recur))))

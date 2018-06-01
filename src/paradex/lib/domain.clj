@@ -3,7 +3,8 @@
     [paradex.kernel.workspace.workspace :refer :all]
     [paradex.kernel.coderack.coderack   :refer :all]
     [paradex.kernel.slipnet.slipnet     :refer :all]
-    [paradex.kernel.library             :refer :all]))
+    [paradex.kernel.library             :refer :all]
+    [paradex.lib.nbongard :refer :all]))
 
 (defn init-domain [central]
   (def-codelet central :x [central] (println "Hello World!!"))
