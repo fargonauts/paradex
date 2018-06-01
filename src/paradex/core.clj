@@ -10,4 +10,4 @@
      :default false :flag true])]
     (when (:help opts)
       (println banner))
-    (run (init-central) (init-domain))))
+    (run (init-domain (init-central)))))
