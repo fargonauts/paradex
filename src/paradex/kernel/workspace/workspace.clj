@@ -1,7 +1,7 @@
 (ns paradex.kernel.workspace.workspace)
 
-(defrecord Workspace [])
-(defn init-workspace [] (Workspace.))
+(defrecord Workspace [input space])
+(defn init-workspace [] (Workspace. {} {}))
 
 ;(defn add-object [central ks object]
 ;  (swap! central
@@ -12,9 +12,13 @@
 ; WORKSPACE: This file contains flavor definitions and methods for the 
 ;            workspace.
 ;---------------------------------------------
+(defn reset-workspace [central ws]
+  (swap! central 
+    (fn [central] 
+      (assoc central :workspace ws))))
 
-;(in-package 'user)
-;
+;()
+
 ;(defflavor workspace
 ;; The workspace contains a list of replacements (mappings from the 
 ;; initial string to the modified string, e.g., from "abc" to "abd"),

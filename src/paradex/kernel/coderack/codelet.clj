@@ -4,7 +4,7 @@
 
 (defn run-codelet [library codelet central]
   "Runs a codelet"
-  (let [skeleton ((:codelet-type codelet) @library)]
+  (let [skeleton ((:codelet-type codelet) library)]
     (apply skeleton (concat [central] (:args codelet)))))
 
 (defn init-codelet 

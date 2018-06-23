@@ -1,6 +1,15 @@
-(ns paradex.lib.domain)
+(ns paradex.lib.domain
+  (:require 
+    [paradex.kernel.workspace.workspace :refer :all]
+    [paradex.kernel.coderack.coderack   :refer :all]
+    [paradex.kernel.slipnet.slipnet     :refer :all]
+    [paradex.kernel.library             :refer :all]
+    [paradex.lib.nbongard :refer :all]))
 
-(defn init-domain [] nil)
+(defn init-domain [central]
+  (def-codelet central :x [central] (println "Hello World!!"))
+  (post central :x :test-codelet 1)
+  central)
 
 "
 Reference:

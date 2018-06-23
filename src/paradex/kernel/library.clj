@@ -12,6 +12,3 @@
        (assoc-in state# [:library (keyword ~id)]
          (fn ~args ~body-list)))))
 
-(defmacro def-clet [id args body]
-  `(def-codelet codelet-library ~id ~args ~body))
-

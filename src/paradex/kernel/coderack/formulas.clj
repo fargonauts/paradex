@@ -5,6 +5,8 @@
   ([coll]
    (weighted-pick coll #(:urgency %)))
   ([coll formula]
+   (println coll)
+   (println (map formula coll))
    (let [index      (wrand (map formula coll)) 
          picked     (nth coll index)
          remaining  (drop-nth index coll)]

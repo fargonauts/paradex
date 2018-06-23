@@ -49,16 +49,6 @@
 ;  ; TODO: Shrink in proportion to label node
 ;  link)
 
-(defn slipnet-update [central]
-  ; TODO: Synchronous activation change via buffers
-  (let [slipnet (:slipnet @central)
-        nodes   (:nodes slipnet)
-        links   (:links slipnet)]
-    (doseq [[k node] nodes]
-      (add-node central k (update-node central node)))))
-    ;(doseq [[k link] links]
-    ;  (add-link central k (update-link central link)))))
-
 
 (defn reset-slipnet 
   "Sets activation to 0 for every node in the slipnet"
@@ -128,7 +118,6 @@
   (association           [central x]))
 
 (extend-protocol Association 
-
   Link
   (intrinsic-assocation [link central]
     (if (:fixed-length link)
@@ -146,7 +135,7 @@
       (intrinsic-association central node))))
 
 (defn update-slipnet [central]
-  ; TODO: Link updates
+  ; TODO: Synchronous activation change via buffers
   (let [slipnet (:slipnet @central)
         nodes   (:nodes slipnet)
         links   (:links slipnet)]
@@ -208,7 +197,6 @@
 ;; Returns t if the slipnode represents a directed bond or group.
 ;  (or (eq self plato-predecessor) (eq self plato-successor) 
 ;      (eq self plato-predgrp) (eq self plato-succgrp)))
-
 
 
 ;(defmethod (slipnode :activate-from-workspace) ()

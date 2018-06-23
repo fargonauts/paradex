@@ -1,7 +1,7 @@
 (ns paradex.core
   (:require [clojure.tools.cli :refer [cli]]
             [paradex.kernel.central :refer [init-central run]]
-            [paradex.lib.domain     :refer [init-domain]])
+            [paradex.lib.nbongard   :refer [nbongard]])
   (:gen-class))
 
 (defn -main [& in-args]
@@ -10,4 +10,4 @@
      :default false :flag true])]
     (when (:help opts)
       (println banner))
-    (run (init-central) (init-domain))))
+    (run (init-central nbongard))))
